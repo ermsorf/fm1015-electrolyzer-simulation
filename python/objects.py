@@ -5,11 +5,10 @@ def bar_to_Pa(p_bar):
     return p_bar * 1e5
 
 class Species:
-    def __init__(self, name, molar_mass, density=None, antoine=None):
+    def __init__(self, name, molar_mass, density=None):
         self.name = name
         self.molar_mass = molar_mass  # kg/mol
         self.density = density        # kg/m3 (optional, only for liquids)
-        self.antoine = antoine        # Antoine coefficient A (for water vapor), optional
 
 class System:
     tanks: list['Tank']
@@ -29,7 +28,7 @@ class Tank:
     def __init__(self, system, volume, temperature, pressure):
         self.system = system
         self.species = {
-            "H2O": Species("H2O", H2O_MOLAR_MASS, density=H2O_DENSITY, antoine={"A": ANTOINE_A, "B": ANTOINE_B, "C": ANTOINE_C}),
+            "H2O": Species("H2O", H2O_MOLAR_MASS, density=H2O_DENSITY),
             "H2": Species("H2", H2_MOLAR_MASS),
             "O2": Species("O2", O2_MOLAR_MASS)
         }
@@ -138,9 +137,9 @@ class Tank:
             warnings.warn("Tank temperature out of Antoine equation range (273.2–473.2 K)", UserWarning)
 
         # unpack Antoine coefficients
-        A = H2O.antoine["A"]
-        B = H2O.antoine["B"]
-        C = H2O.antoine["C"]
+        A = ANTOINE_A
+        B = ANTOINE_B
+        C = ANTOINE_C
 
         log10_pH2O_sat = A - B / (C + T)
 
