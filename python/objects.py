@@ -50,7 +50,7 @@ class Tank:
         pass
 
     # LEVELS --------------------------------------------------------
-    def update_levels(self, **kwargs): 
+    def update_levels(self): 
         """"
         Docstring to be added
         """
