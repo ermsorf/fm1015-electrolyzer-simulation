@@ -5,10 +5,18 @@ def bar_to_Pa(p_bar):
     return p_bar * 1e5
 
 class Species:
-    def __init__(self, name, molar_mass, density=None):
+    def __init__(self, name, molar_mass):
         self.name = name
         self.molar_mass = molar_mass  # kg/mol
-        self.density = density        # kg/m3 (optional, only for liquids)
+
+class Gas(Species):
+    def __init__(self, name, molar_mass):
+        super().__init__(name, molar_mass)
+class Liquid(Species):
+    def __init__(self, name, molar_mass, density):
+        super().__init__(name, molar_mass)
+        self.density = density # kg/m3 (optional, only for liquids)
+
 
 class System:
     tanks: list['Tank']
