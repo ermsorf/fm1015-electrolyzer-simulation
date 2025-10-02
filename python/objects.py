@@ -5,18 +5,48 @@ def bar_to_Pa(p_bar):
     return p_bar * 1e5
 
 class Species:
-    def __init__(self, name, molar_mass):
-        self.name = name
-        self.molar_mass = molar_mass  # kg/mol
+    mole_count: float
+    molar_mass: float
+    mass: float
+    def __init__(self):
+        self.mole_count = None
+        self.mass = None
+class Water(Species):
+    def __init__(self):
+        self.molar_mass = H2O_MOLAR_MASS
+class Oxygen(Species):
+    molar_mass: float
+    def __init__(self):
+        self.molar_mass = O2_MOLAR_MASS
+class Hydrogen(Species):
+    molar_mass: float
+    def __init__(self):
+        self.molar_mass = H2_MOLAR_MASS
+class Phase:
+    water: Water
+    oxygen: Oxygen
+    hydrogen: Hydrogen
+    volume: float
+    mass: float
+    species: Species
+    def __init__(self):
+        self.water = Water()
+        self.hydrogen = Hydrogen()
+        self.oxygen = Oxygen()
+        self.species = [self.water, self.hydrogen,self.oxygen]
+        self.volume = None
+        self.mass = None
+    def refresh_mass(self):
+        self.mass = self.water.mass + self.hydrogen.mass + self.oxygen.mass
 
-class Gas(Species):
-    def __init__(self, name, molar_mass):
-        super().__init__(name, molar_mass)
-class Liquid(Species):
-    def __init__(self, name, molar_mass, density):
-        super().__init__(name, molar_mass)
-        self.density = density # kg/m3 (optional, only for liquids)
-
+class Gas(Phase):
+    def __init__(self):
+        super().__init__()
+class Liquid(Phase):
+    density: float
+    def __init__(self):
+        super().__init__()
+        self.density = H2O_DENSITY
 
 class System:
     tanks: list['Tank']
@@ -35,23 +65,11 @@ class System:
 class Tank:
     def __init__(self, system, volume, temperature, pressure):
         self.system = system
-        self.species = {
-            "H2O": Species("H2O", H2O_MOLAR_MASS, density=H2O_DENSITY),
-            "H2": Species("H2", H2_MOLAR_MASS),
-            "O2": Species("O2", O2_MOLAR_MASS)
-        }
-
+        self.liquid = Liquid()
+        self.gas = Gas()
         self.volume = volume  # m3
         self.temperature = temperature  # K
         self.pressure = pressure  # Pa
-
-        self.liquid_mol = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
-        self.liquid_mass = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
-        self.liquid_vol = 0
-
-        self.gas_mol = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
-        self.gas_mass = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
-        self.gas_vol = 0
 
     def log_state(self):
         pass
@@ -80,12 +98,12 @@ class Tank:
         :param Tank: Tank Object
         :return liquid_mass: dict of mass of liquids in tank [kg]
         """
-        liquid_mass = {
-            name: mol * sp.molar_mass
-            for name, mol in self.liquid_mol.items() # name, mol = key, val
-            for sp in [self.species[name]]
-        }
-        return liquid_mass
+        for liquid in self.liquid.species:
+            liquid: Species
+            liquid.mass = liquid.mole_count * liquid.molar_mass
+        self.liquid.refresh_mass()
+        
+        return self.liquid.mass
     
     def find_liquid_volume(self):
         """
@@ -93,8 +111,9 @@ class Tank:
         :param Tank: Tank Object
         :return liquid_vol: dict of volume of liquids in tank [m3]
         """
-        liquid_vol = self.liquid_mol["H2O"] * self.species["H2O"].density
-        return liquid_vol
+        self.liquid.volume = self.liquid.density + self.liquid.water.molar_mass
+        # TODO expand to all liquids if task desires it?
+        return self.liquid.volume
 
 
     # GAS -------------------------------------------------------
@@ -104,10 +123,11 @@ class Tank:
         :param self: Tank Object
         :return gas_mas: dict of mass of gasses in tank [kg]
         """
-        gas_mass = {
-            name: mol * self.species[name].molar_mass
-            for name, mol in self.gas_mol.items()}
-        return gas_mass
+        for gas in self.gas.species:
+            gas: Species
+            gas.mass = gas.mole_count * gas.molar_mass
+        self.gas.refresh_mass()
+        return self.gas.mass
 
     def find_gas_volume(self):
         """
@@ -116,7 +136,8 @@ class Tank:
         :return gas_volume: volume of gasses in tank [m3]
         """
         # Gases mixed together, makes little sense to separate them
-        return self.volume - self.liquid_vol
+        self.gas.volume = self.volume - self.liquid.volume
+        return self.gas.volume
 
     # PRESSURE FUNCTIONS --------------------------------------------
     def find_tank_pressure(self):
@@ -125,8 +146,10 @@ class Tank:
         :param self: Tank Object
         :return tank_pressure: pressure in tank [Pa]  
         """
-        mol = sum(self.gas_mol.values())
-        p = mol * IDEAL_GAS_CONSTANT * self.temperature / self.gas_vol
+        mol = 0
+        for species in self.gas.species:
+            mol += species.mass
+        p = mol * IDEAL_GAS_CONSTANT * self.temperature / self.gas.volume
         return p
 
 
