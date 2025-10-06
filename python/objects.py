@@ -1,5 +1,6 @@
 from parameters import *
 import warnings
+from typing import Callable
 
 def bar_to_Pa(p_bar):
     return p_bar * 1e5
@@ -11,14 +12,30 @@ class Species:
         self.density = density        # kg/m3 (optional, only for liquids)
 
 class System:
-    tanks: list['Tank']
+    next_tanks: list['Tank']
     cellcount: int
     def __init__(self):
         self.tanks = list()
+        self.next_tanks = list()
         self.cellcount = None # set to 0?
 
     def add_tank(self, tank):
+        self.next_tanks.append(tank)
         self.tanks.append(tank)
+    
+    def reload_tanks(self):
+        """
+        update the old_tank values to be 
+        equal to the current tank state.
+        """
+        self.tanks = list()
+        for tank in self.next_tanks:
+            self.tanks.append(tank)
+
+    def update_state(self):
+        for tank in self.next_tanks:
+            tank.update_mole_balance()
+        self.reload_tanks()
 
     def log_state(self):
         pass
@@ -44,9 +61,51 @@ class Tank:
         self.gas_mol = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
         self.gas_mass = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
         self.gas_vol = 0
+        
+        self.influents = list()
+        self.effluents = list()
+
+    def add_influent(self, influent: Callable) -> None:
+        self.influents.append(influent)
+
+    def add_efffluent(self, effluent: Callable) -> None:
+        self.effluents.append(effluent)
+
 
     def log_state(self):
         pass
+
+    # Mole balance --------------------------------------------
+    def update_mole_balance(self):
+        """
+        Compute everything ✨
+        """
+        influents = self.compute_influents()
+        effluents = self.compute_effluents()
+        self.cellcount = influents - effluents
+        pass 
+
+    def compute_influents(self) -> dict:
+        """
+        Compute all influent mole balances
+        """
+        influent_sum = {"H2O": 0, "O2": 0, "H2": 0}
+        for influent_function in self.influents:
+            influent = influent_function(self)
+            for key in influent_sum.keys():
+                influent_sum[key] += influent[key]
+        return influent_sum
+    
+    def compute_effluents(self) -> dict:
+        """
+        Compute all effluent mole balances
+        """
+        effluent_sum = {"H2O": 0, "O2": 0, "H2": 0}
+        for effluent_function in self.effluents:
+            effluent = effluent_function(self)
+            for key in effluent_sum.keys():
+                effluent_sum[key] += effluent[key]
+        return effluent_sum
 
     # LEVELS --------------------------------------------------------
     def update_levels(self): 
@@ -88,7 +147,6 @@ class Tank:
         liquid_vol = self.liquid_mol["H2O"] * self.species["H2O"].density
         return liquid_vol
 
-
     # GAS -------------------------------------------------------
     def find_gas_mass(self):
         """
@@ -120,7 +178,6 @@ class Tank:
         mol = sum(self.gas_mol.values())
         p = mol * IDEAL_GAS_CONSTANT * self.temperature / self.gas_vol
         return p
-
 
     def find_saturation_pressure(self):
         """
