@@ -45,9 +45,16 @@ class Tank:
     def __init__(self, system, volume, temperature, pressure):
         self.system = system
         self.species = {
+            "liquid":{
             "H2O": Species("H2O", H2O_MOLAR_MASS, density=H2O_DENSITY),
             "H2": Species("H2", H2_MOLAR_MASS),
             "O2": Species("O2", O2_MOLAR_MASS)
+            },
+            "gas":{
+            "H2O": Species("H2O", H2O_MOLAR_MASS, density=H2O_DENSITY),
+            "H2": Species("H2", H2_MOLAR_MASS),
+            "O2": Species("O2", O2_MOLAR_MASS)
+            }
         }
 
         self.volume = volume  # m3
@@ -82,8 +89,9 @@ class Tank:
         """
         influents = self.compute_influents()
         effluents = self.compute_effluents()
-        self.cellcount = influents - effluents
-        pass 
+        for phase in ["liquid", "gas"]:
+            for species in ["H2O", "H2", "O2"]:
+                self.species[phase][species] = influents[phase][species] - effluents[phase][species]
 
     def compute_influents(self) -> dict:
         """
@@ -100,11 +108,14 @@ class Tank:
         """
         Compute all effluent mole balances
         """
-        effluent_sum = {"H2O": 0, "O2": 0, "H2": 0}
+        liquids = {"H2O": 0, "O2": 0, "H2": 0}
+        gases = liquids.copy()
+        effluent_sum = {"liquid": liquids, "gas": gases}
         for effluent_function in self.effluents:
             effluent = effluent_function(self)
-            for key in effluent_sum.keys():
-                effluent_sum[key] += effluent[key]
+            for phase in effluent_sum.keys():
+                for key in phase.keys():
+                    effluent_sum[phase][key] += effluent[phase][key]
         return effluent_sum
 
     # LEVELS --------------------------------------------------------
