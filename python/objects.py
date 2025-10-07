@@ -49,62 +49,40 @@ class Tank:
         self.temperature = temperature  # K
         self.pressure = pressure  # Pa
 
-        self.liquid_mol = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
-        self.liquid_mass = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
-        self.liquid_vol = 0
 
+        self.liq_mol = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
         self.gas_mol = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
-        self.gas_mass = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
-        self.gas_vol = 0
+
         
         self.influents = list()
         self.effluents = list()
 
+
     def add_influent(self, influent: Callable) -> None:
+        """
+        List of functions that add mols to the tank.
+        Each function should take the tank as an argument and modify its liq_mol and gas_mol attributes.
+        """
         self.influents.append(influent)
 
     def add_effluent(self, effluent: Callable) -> None:
+        """
+        List of functions that remove mols from the tank.
+        Each function should take the tank as an argument and modify its liq_mol and gas_mol attributes.
+        """
         self.effluents.append(effluent)
 
-
-    def log_state(self):
-        pass
-
-    # Mole balance --------------------------------------------
-    def update_mole_balance(self):
+    # Mol --------------------------------------------
+    def update_mol(self):
         """
         Compute everything ✨
+        Apply all functions in influents and effluents to self. Individual functions should modify self.x_mol accordingly.
         """
-        influents = self.compute_influents()
-        effluents = self.compute_effluents()
-        for phase in ["liquid", "gas"]:
-            for species in ["H2O", "H2", "O2"]:
-                self.species[phase][species] = influents[phase][species] - effluents[phase][species]
+        for function in self.influents:
+            function(self)
+        for function in self.effluents:
+            function(self)
 
-    def compute_influents(self) -> dict:
-        """
-        Compute all influent mole balances
-        """
-        influent_sum = {"H2O": 0, "O2": 0, "H2": 0}
-        for influent_function in self.influents:
-            influent = influent_function(self)
-            for key in influent_sum.keys():
-                influent_sum[key] += influent[key]
-        return influent_sum
-    
-    def compute_effluents(self) -> dict:
-        """
-        Compute all effluent mole balances
-        """
-        liquids = {"H2O": 0, "O2": 0, "H2": 0}
-        gases = liquids.copy()
-        effluent_sum = {"liquid": liquids, "gas": gases}
-        for effluent_function in self.effluents:
-            effluent = effluent_function(self)
-            for phase in effluent_sum.keys():
-                for key in phase.keys():
-                    effluent_sum[phase][key] += effluent[phase][key]
-        return effluent_sum
     
 
 
