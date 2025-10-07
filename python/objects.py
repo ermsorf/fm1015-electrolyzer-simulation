@@ -5,11 +5,6 @@ from typing import Callable
 def bar_to_Pa(p_bar):
     return p_bar * 1e5
 
-class Species:
-    def __init__(self, name, molar_mass, density=None):
-        self.name = name
-        self.molar_mass = molar_mass  # kg/mol
-        self.density = density        # kg/m3 (optional, only for liqs)
 
 class System:
     next_tanks: list['Tank']
@@ -86,7 +81,9 @@ class Tank:
     
 
 
-if __name__ == "__main__":
+
+
+def initialize_test_tanks():
     system = System()
     atank = Tank(system, ANODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE, 1.2e5)
     atank.gas_mol["O2"] = (ANODE_SEPARATOR_VOLUME - ANODE_LIQUID_VOLUME) * atank.pressure / (IDEAL_GAS_CONSTANT * atank.temperature)
@@ -101,6 +98,13 @@ if __name__ == "__main__":
 
     print(atank.gas_mol)
     print(ctank.gas_mol)
+    
+    return system, atank, ctank
+
+
+
+if __name__ == "__main__":
+    initialize_test_tanks()
 
 
 
