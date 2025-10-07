@@ -75,7 +75,7 @@ class Tank:
     def add_influent(self, influent: Callable) -> None:
         self.influents.append(influent)
 
-    def add_efffluent(self, effluent: Callable) -> None:
+    def add_effluent(self, effluent: Callable) -> None:
         self.effluents.append(effluent)
 
 
@@ -117,12 +117,49 @@ class Tank:
                 for key in phase.keys():
                     effluent_sum[phase][key] += effluent[phase][key]
         return effluent_sum
+    
+
+
+    # CATHODE EFFLUENTS ----------------------------------------------------
+
+    def compute_recycled(self):
+        """
+        Compute recycled effluent mole balances
+        """
+        # TODO
+        # Assume tank and pump concentrations are identical
+        total_mass = sum([self.liquid_mol[sp] * self.species.liquid[sp].molar_mass for sp in self.liquid_mol.keys()])
+        cathode_mass_rate = self.cathode_mass_rate_pump()
+        
+        # Calculate molar flow rates based on mass fractions
+        H2_molar_flow = self.liquid_mol["H2"] / total_mass * cathode_mass_rate
+        O2_molar_flow = self.liquid_mol["O2"] / total_mass * cathode_mass_rate
+        H2O_molar_flow = self.liquid_mol["H2O"] / total_mass * cathode_mass_rate
+        
+        nd__cr = {
+            "H2O": H2O_molar_flow,
+            "H2": H2_molar_flow,
+            "O2": O2_molar_flow 
+        }
+        return nd__cr
+
+
+    def cathode_channel_cooling(self):
+        # TODO
+        return 0 
+        
+
+    def cathode_mass_rate_pump(self):
+        """md_p__cr. Compute the mass flow rate of the cathode pump. """
+        mass_rate_reference = self.volume * self.species["H2O"].density  # kg
+        v_actual = self.volume
+        v_target = CATHODE_LIQUID_VOLUME
+        mass_rate_actual = mass_rate_reference +  CATHODE_SEPARATOR_CONTROLLER_GAIN * (v_actual - v_target)
+        return mass_rate_actual
+
 
     # LEVELS --------------------------------------------------------
     def update_levels(self): 
-        """"
-        Docstring to be added
-        """
 
         # self.liquid_mol = self.find_liquid_mol()
         self.liquid_mass = self.find_liquid_mass()
