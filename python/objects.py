@@ -5,9 +5,27 @@ from typing import Callable
 def bar_to_Pa(p_bar):
     return p_bar * 1e5
 
+class Moles():
+    def __init__(self):
+        self.species = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
+        return 
+    def __getitem__(self, name):
+        return self.species[name]
+    def __setitem__(self, species, value):
+        self.species[species] = value
+    def __add__(self, other: 'Moles'):
+        out = Moles()
+        for attribute in other.species.keys():
+            out[attribute] = self.species[attribute] + other.species[attribute]
+        return self
+    def __str__(self):
+        return f' - H2O: {self.species["H2O"]}\n - O2: {self.species["O2"]}\n - H2: {self.species["H2"]}'
+
+
 
 class System:
     next_tanks: list['Tank']
+    tanks: list['Tank']
     cellcount: int
     def __init__(self):
         self.tanks = list()
@@ -35,7 +53,6 @@ class System:
     def log_state(self):
         pass
 
-
 class Tank:
     def __init__(self, system, volume, temperature, pressure):
         self.system = system
@@ -45,12 +62,13 @@ class Tank:
         self.pressure = pressure  # Pa
 
 
-        self.liq_mol = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
-        self.gas_mol = {"H2O": 0.0, "O2": 0.0, "H2": 0.0}
-
+        self.liq_mol = Moles()
+        self.gas_mol = Moles()
         
         self.influents = list()
         self.effluents = list()
+        self.influent_values =  Moles()
+        self.effluent_values = Moles()
 
 
     def add_influent(self, influent: Callable) -> None:
@@ -63,7 +81,8 @@ class Tank:
     def add_effluent(self, effluent: Callable) -> None:
         """
         List of functions that remove mols from the tank.
-        Each function should take the tank as an argument and modify its liq_mol and gas_mol attributes.
+        Each function should take the tank as an argument
+        and modify its liq_mol and gas_mol attributes.
         """
         self.effluents.append(effluent)
 
@@ -71,16 +90,16 @@ class Tank:
     def update_mol(self):
         """
         Compute everything ✨
-        Apply all functions in influents and effluents to self. Individual functions should modify self.x_mol accordingly.
+        Apply all functions in influents and effluents to self.
+        Individual functions should return a Moles object with its 
+        modifications.
         """
+        self.influent_values = Moles()
+        self.effluent_values = Moles()
         for function in self.influents:
-            function(self)
+            self.influent_values += function(self)
         for function in self.effluents:
-            function(self)
-
-    
-
-
+            self.effluent_values += function(self)
 
 
 def initialize_test_tanks():
