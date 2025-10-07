@@ -1,4 +1,4 @@
-from objects import Tank, System
+from objects import Tank, System, initialize_test_tanks
 from parameters import (
 ANODE_REFERENCE_INJECTION,
 ANODE_LIQUID_VOLUME,
@@ -15,6 +15,11 @@ def inlet_pump(tank: Tank):
     
 
 if __name__ == "__main__":
-    system = System()
-    tank = Tank()
-    inlet_pump(tank)
+    system, atank, ctank = initialize_test_tanks()
+    
+    print("Initial anode tank H2O:", atank.liq_mol["H2O"])
+    print("Initial anode tank volume:", atank.volume)
+    
+    inlet_pump(atank)
+    
+    print("After inlet pump - anode tank H2O:", atank.liq_mol["H2O"])
