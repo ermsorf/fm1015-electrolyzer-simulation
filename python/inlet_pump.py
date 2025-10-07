@@ -8,19 +8,9 @@ ANODE_SEPARATOR_CONTROLLER_GAIN
 def inlet_pump(tank: Tank):
     volume_difference = ANODE_LIQUID_VOLUME - tank.volume
     inlet_flow = ANODE_REFERENCE_INJECTION + ANODE_SEPARATOR_CONTROLLER_GAIN*volume_difference
-    flow = {
-        "liquid":{
-            "H2O": inlet_flow,
-            "H2": 0,
-            "O2": 0
-        },
-        "gas":{
-            "H2O": 0,
-            "H2": 0,
-            "O2": 0
-        }
-    }
-    return flow
+
+    tank.liq_mol["H2O"] += inlet_flow
+    return None
 
     
 
