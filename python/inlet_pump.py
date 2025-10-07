@@ -1,14 +1,13 @@
-from objects import Tank, System, Species
+from objects import Tank, System
 from parameters import (
 ANODE_REFERENCE_INJECTION,
-ANODE_REFERENCE_VOLUME,
-ANODE_KP
+ANODE_LIQUID_VOLUME,
+ANODE_SEPARATOR_CONTROLLER_GAIN
 )
 
-
 def inlet_pump(tank: Tank):
-    volume_difference = ANODE_REFERENCE_VOLUME - tank.volume
-    inlet_flow = ANODE_REFERENCE_INJECTION + ANODE_KP*volume_difference
+    volume_difference = ANODE_LIQUID_VOLUME - tank.volume
+    inlet_flow = ANODE_REFERENCE_INJECTION + ANODE_SEPARATOR_CONTROLLER_GAIN*volume_difference
     flow = {
         "liquid":{
             "H2O": inlet_flow,
