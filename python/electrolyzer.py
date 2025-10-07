@@ -1,4 +1,22 @@
 from objects import System, Tank
+from parameters import *
+from enum import Enum
+
+class DIRECTION(Enum):
+    """
+    Assuming flow FROM anode TO cathode
+    --> Anode generation is negative, cathode generation is positive.
+    Negative generation is assumed not lost,
+    but transferred to other side (zero-sum).
+    """
+    A2C = 1
+    C2A = -1
+    ANODE_TO_CATHODE = 1
+    CATHODE_TO_ANODE = -1
+    ANODE_GENERATION = -1
+    CATHODE_GENERATION = 1
+    ANODE_CONSUMPTION = 1
+    CATHODE_CONSUMPTION = -1
 
 class Electrolyzer:
     drag: dict
@@ -11,6 +29,10 @@ class Electrolyzer:
         self.drag = {"H2O": 0, "H2": 0, "O2": 0}
         self.diffusion = {"H2O": 0, "H2": 0, "O2": 0}
         self.generation = {"H2O": 0, "H2": 0, "O2": 0}
+        self.ipp = 0
+
+    def set_ipp(self, ipp):
+        self.ipp = ipp
     
     def get_total_flow(self)->dict:
         out = {"H2O": 0, "H2": 0, "O2": 0}
@@ -36,7 +58,11 @@ class Electrolyzer:
         return self.generation
 
     def oxygen_generation(self):
-        self.generation["O2"] = 0
+        stochiometric_coefficient = STOICHIOMETRIC_MATRIX["O2"] / ELECTRON_STOICHIOMETRIC_MATRIX
+        electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
+        constant_terms = stochiometric_coefficient * electrolyzer_properties / FARADAY_CONSTANT
+        self.generation["O2"] = constant_terms * self.ipp * DIRECTION.ANODE_GENERATION
+        
 
     def hydrogen_generation(self):
         self.generation["H2"] = 0
