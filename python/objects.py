@@ -86,19 +86,22 @@ class Tank:
 def initialize_test_tanks():
     system = System()
     atank = Tank(system, ANODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE, 1.2e5)
+
     atank.gas_mol["O2"] = (ANODE_SEPARATOR_VOLUME - ANODE_LIQUID_VOLUME) * atank.pressure / (IDEAL_GAS_CONSTANT * atank.temperature)
     atank.liq_mol["H2O"] = ANODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
+
+    # m3 * kg/m3 / kg/mol = mol
 
     ctank = Tank(system, CATHODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE, 30e5)
     ctank.gas_mol["H2"] = (CATHODE_SEPARATOR_VOLUME - CATHODE_LIQUID_VOLUME) * ctank.pressure / (IDEAL_GAS_CONSTANT * ctank.temperature)
     ctank.liq_mol["H2O"] = CATHODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
 
-    print(atank.liq_mol)
-    print(ctank.liq_mol)
+    print(f"Anode liq: {atank.liq_mol}")
+    print(f"Cathode liq: {ctank.liq_mol}")
 
-    print(atank.gas_mol)
-    print(ctank.gas_mol)
-    
+    print(f"Anode gas: {atank.gas_mol}")
+    print(f"Cathode gas: {ctank.gas_mol}")
+
     return system, atank, ctank
 
 
