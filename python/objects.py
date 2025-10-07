@@ -9,7 +9,7 @@ class Species:
     def __init__(self, name, molar_mass, density=None):
         self.name = name
         self.molar_mass = molar_mass  # kg/mol
-        self.density = density        # kg/m3 (optional, only for liquids)
+        self.density = density        # kg/m3 (optional, only for liqs)
 
 class System:
     next_tanks: list['Tank']
@@ -44,18 +44,6 @@ class System:
 class Tank:
     def __init__(self, system, volume, temperature, pressure):
         self.system = system
-        self.species = {
-            "liquid":{
-            "H2O": Species("H2O", H2O_MOLAR_MASS, density=H2O_DENSITY),
-            "H2": Species("H2", H2_MOLAR_MASS),
-            "O2": Species("O2", O2_MOLAR_MASS)
-            },
-            "gas":{
-            "H2O": Species("H2O", H2O_MOLAR_MASS, density=H2O_DENSITY),
-            "H2": Species("H2", H2_MOLAR_MASS),
-            "O2": Species("O2", O2_MOLAR_MASS)
-            }
-        }
 
         self.volume = volume  # m3
         self.temperature = temperature  # K
@@ -120,13 +108,24 @@ class Tank:
     
 
 
+if __name__ == "__main__":
+    system = System()
+    tank = Tank(system, 1.0, 300, 1e5)
+    print(tank.liq_mol)
+
+
+
+
+
+""" OLD TANK METHODS, TO BE DELETED LATER
+
 
     # LEVELS --------------------------------------------------------
     def update_levels(self): 
 
-        # self.liquid_mol = self.find_liquid_mol()
-        self.liquid_mass = self.find_liquid_mass()
-        self.liquid_vol = self.find_liquid_volume()
+        # self.liq_mol = self.find_liq_mol()
+        self.liq_mass = self.find_liq_mass()
+        self.liq_vol = self.find_liq_volume()
         
         # self.gas_mol = self.find_gas_mol()
         self.gas_mass = self.find_gas_mass()
@@ -135,67 +134,67 @@ class Tank:
 
         self.pressure = self.find_tank_pressure()
 
-    # LIQUID ----------------------------------------------------
-    def find_liquid_mass(self):
-        """
-        Finds mass of liquids in tank.
+    # liq ----------------------------------------------------
+    def find_liq_mass(self):
+        
+        Finds mass of liqs in tank.
         :param Tank: Tank Object
-        :return liquid_mass: dict of mass of liquids in tank [kg]
-        """
-        liquid_mass = {
+        :return liq_mass: dict of mass of liqs in tank [kg]
+        
+        liq_mass = {
             name: mol * sp.molar_mass
-            for name, mol in self.liquid_mol.items() # name, mol = key, val
+            for name, mol in self.liq_mol.items() # name, mol = key, val
             for sp in [self.species[name]]
         }
-        return liquid_mass
+        return liq_mass
     
-    def find_liquid_volume(self):
-        """
-        Finds volume of liquids in tank. 
+    def find_liq_volume(self):
+        
+        Finds volume of liqs in tank. 
         :param Tank: Tank Object
-        :return liquid_vol: dict of volume of liquids in tank [m3]
-        """
-        liquid_vol = self.liquid_mol["H2O"] * self.species["H2O"].density
-        return liquid_vol
+        :return liq_vol: dict of volume of liqs in tank [m3]
+        
+        liq_vol = self.liq_mol["H2O"] * self.species["H2O"].density
+        return liq_vol
 
     # GAS -------------------------------------------------------
     def find_gas_mass(self):
-        """
+        
         Finds gas masses in tank.
         :param self: Tank Object
         :return gas_mas: dict of mass of gasses in tank [kg]
-        """
+        
         gas_mass = {
             name: mol * self.species[name].molar_mass
             for name, mol in self.gas_mol.items()}
         return gas_mass
 
     def find_gas_volume(self):
-        """
+        
         Finds gas volume in tank.
         :param self: Tank Object
         :return gas_volume: volume of gasses in tank [m3]
-        """
+        
         # Gases mixed together, makes little sense to separate them
-        return self.volume - self.liquid_vol
+        return self.volume - self.liq_vol
 
     # PRESSURE FUNCTIONS --------------------------------------------
     def find_tank_pressure(self):
-        """
+        
         Finds total tank pressure.
         :param self: Tank Object
         :return tank_pressure: pressure in tank [Pa]  
-        """
+        
         mol = sum(self.gas_mol.values())
         p = mol * IDEAL_GAS_CONSTANT * self.temperature / self.gas_vol
         return p
 
     def find_saturation_pressure(self):
-        """
+        
         Finds saturation pressure of water at temperature T using Antoine equation. 
         :param self: Tank Object 
         :returns p_H2O_sat: Saturation pressure of water [Pa]
-        """
+        
         T = self.temperature
         H2O = self.species["H2O"]
 
@@ -215,13 +214,15 @@ class Tank:
         return p_H2O_sat
 
     def find_gas_partial_pressure(self):
-        """
+        
         Finds partial pressure of gas in tank using sum of gases law.
         :param Tank: Tank Object
         :returns p_gas: Partial pressure of gas in tank [Pa]
-        """
+        
         sat_p = self.find_saturation_pressure()  
         if sat_p >= self.pressure:
             warnings.warn("Result could be inaccurate: Saturation pressure exceeds tank pressure, water vaporization present. ", UserWarning)
             return 0
         return self.pressure - sat_p
+
+"""
