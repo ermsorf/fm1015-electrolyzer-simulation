@@ -2,40 +2,10 @@ from parameters import *
 import warnings
 from moles import Moles
 from typing import Callable
+from objects import System
 
 def bar_to_Pa(p_bar):
     return p_bar * 1e5
-
-class System:
-    next_tanks: list['Tank']
-    tanks: list['Tank']
-    cellcount: int
-    def __init__(self):
-        self.tanks = list()
-        self.next_tanks = list()
-        self.cellcount = None # set to 0?
-
-    def add_tank(self, tank):
-        self.next_tanks.append(tank)
-        self.tanks.append(tank)
-    
-    def reload_tanks(self):
-        """
-        update the old_tank values to be 
-        equal to the current tank state.
-        """
-        self.tanks = list()
-        for tank in self.next_tanks:
-            self.tanks.append(tank)
-
-    def update_state(self):
-        for tank in self.next_tanks:
-            tank.update_mole_balance()
-        self.reload_tanks()
-
-    def log_state(self):
-        pass
-
 class Tank:
     def __init__(self, system, volume, temperature, pressure):
         self.system = system
