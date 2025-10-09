@@ -40,32 +40,6 @@ class Electrolyzer:
     def cathode_consumption(self, ammount: Moles):
         self.cathode_count -= ammount
 
-    
-    # might delete? >>>>>
-    def get_total_flow(self)->dict:
-        out = Moles()
-        for key, diffusion, drag, generation in (
-            out.keys(), 
-            self.diffusion.items(),
-            self.drag.items(),
-            self.generation.items()
-        ):
-            out[key] += diffusion[key]
-            out[key] += drag[key]
-            out[key] += generation[key]
-        return out
-        
-
-    def get_drag(self) -> dict:
-        return self.drag
-
-    def get_diffusion(self) -> dict:
-        return self.diffusion
-
-    def get_generation(self) -> dict:
-        return self.generation
-    # <<<<< might delete?
-
     def oxygen_generation(self):
         stochiometric_coefficient = STOICHIOMETRIC_MATRIX["O2"] / ELECTRON_STOICHIOMETRIC_MATRIX
         electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
