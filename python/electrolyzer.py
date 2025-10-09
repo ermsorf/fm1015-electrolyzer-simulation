@@ -1,22 +1,6 @@
-from objects import System, Tank
+from objects import System, Tank, Moles
 from parameters import *
 from enum import Enum
-
-class DIRECTION(Enum):
-    """
-    Assuming flow FROM anode TO cathode
-    --> Anode generation is negative, cathode generation is positive.
-    Negative generation is assumed not lost,
-    but transferred to other side (zero-sum).
-    """
-    A2C = 1
-    C2A = -1
-    ANODE_TO_CATHODE = 1
-    CATHODE_TO_ANODE = -1
-    ANODE_GENERATION = -1
-    CATHODE_GENERATION = 1
-    ANODE_CONSUMPTION = 1
-    CATHODE_CONSUMPTION = -1
 
 class Electrolyzer:
     drag: dict
@@ -26,16 +10,40 @@ class Electrolyzer:
     def __init__(self, anode: Tank, cathode: Tank):
         self.anode = anode
         self.cathode = cathode 
-        self.drag = {"H2O": 0, "H2": 0, "O2": 0}
-        self.diffusion = {"H2O": 0, "H2": 0, "O2": 0}
-        self.generation = {"H2O": 0, "H2": 0, "O2": 0}
+        self.anode_count = Moles()
+        self.cathode_count = Moles()
         self.ipp = 0
-
+    
     def set_ipp(self, ipp):
         self.ipp = ipp
+
+    # Update mole counts:
+    def push_vales(self):
+        # TODO find out how the mole phase distribution works
+        #self.anode.[liq/gas]_mol +=self.anode_count
+        #self.cathode.[liq/gas]_mol +=self.cathode_count
+        ...
+
+    def anode_send_to_cathode(self, ammount: Moles):
+        self.cathode_generation(ammount)
+        self.anode_consumption(ammount)
+    def anode_generation(self, ammount: Moles):
+        self.anode_count += ammount
+    def anode_consumption(self, ammount: Moles):
+        self.anode_count -=ammount
+
+    def cathode_send_to_anode(self, ammount: Moles):
+        self.anode_generation(ammount)
+        self.cathode_consumption(ammount)
+    def cathode_generation(self, ammount: Moles):
+        self.cathode_count += ammount
+    def cathode_consumption(self, ammount: Moles):
+        self.cathode_count -= ammount
+
     
+    # might delete? >>>>>
     def get_total_flow(self)->dict:
-        out = {"H2O": 0, "H2": 0, "O2": 0}
+        out = Moles()
         for key, diffusion, drag, generation in (
             out.keys(), 
             self.diffusion.items(),
@@ -56,13 +64,16 @@ class Electrolyzer:
 
     def get_generation(self) -> dict:
         return self.generation
+    # <<<<< might delete?
 
     def oxygen_generation(self):
         stochiometric_coefficient = STOICHIOMETRIC_MATRIX["O2"] / ELECTRON_STOICHIOMETRIC_MATRIX
         electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
         constant_terms = stochiometric_coefficient * electrolyzer_properties / FARADAY_CONSTANT
-        self.generation["O2"] = constant_terms * self.ipp * DIRECTION.ANODE_GENERATION
-        
+        generation = constant_terms*self.ipp
+
+        moles = Moles(O2 = generation)
+        self.anode_generation(moles)
 
     def hydrogen_generation(self):
         self.generation["H2"] = 0
@@ -72,13 +83,36 @@ class Electrolyzer:
 
     
     def oxygen_diffusion(self):
-        self.diffusion["O2"] = 0
+        """compute oxygen diffusion and send to cathode"""
+        # use pressure "absolute value":
+        # Negative flow in base formula
+        # implies flow from anode to cathode.
+        # (explicitly: stating negative flow cathode -> anode)
+        # This is handled by flow direction instead of sign.
+        # -AT
+        membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
+        membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_O2
+        membrane_constant = membrane_size * membrane_properties
+        cathode_pressure = self.cathode.pressure # CHECK
+        anode_pressure = self.anode.pressure # CHECK
+        delta_p = cathode_pressure - anode_pressure 
+        diffusion = membrane_constant*delta_p
+        moles = Moles(O2 = diffusion)
+        self.anode_send_to_cathode(moles)
 
     def hydrogen_diffusion(self):
-        self.diffusion["H2"] = 0
+        membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
+        membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_H2
+        membrane_constant = membrane_size * membrane_properties
+        cathode_pressure = self.cathode.pressure # CHECK
+        anode_pressure = self.anode.pressure # CHECK
+        delta_p = cathode_pressure - anode_pressure
+        diffusion = membrane_constant*delta_p
+        moles = Moles(H2 = diffusion)
+        self.cathode_send_to_anode(moles)
 
     def water_diffusion(self):
-        self.diffusion["H2O"] = 0
+        raise NotImplementedError("Water diffusion does not occur!")
 
 
     def oxygen_drag(self):
