@@ -1,6 +1,5 @@
 from objects import System, Tank, Moles
 from parameters import *
-from enum import Enum
 
 class Electrolyzer:
     drag: dict
@@ -45,7 +44,6 @@ class Electrolyzer:
         electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
         constant_terms = stochiometric_coefficient * electrolyzer_properties / FARADAY_CONSTANT
         generation = constant_terms*self.ipp
-
         moles = Moles(O2 = generation)
         self.anode_generation(moles)
 
