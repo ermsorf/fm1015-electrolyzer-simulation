@@ -18,8 +18,7 @@ class Tank:
         self.pressure = pressure  # Pa
 
 
-        self.liq_mol = Mols()
-        self.gas_mol = Mols()
+        self.mols = Mols()
         
         self.influents = list()
         self.effluents = list()
@@ -50,43 +49,33 @@ class Tank:
         Individual functions should return a tuple of two Mols objects 
         with its modifications: (liquid_mols, gas_mols).
         """
-        self.influent_values_liq = Mols()
-        self.influent_values_gas = Mols()
-        self.effluent_values_liq = Mols()
-        self.effluent_values_gas = Mols()
+        self.influent_values = Mols()
+        self.effluent_values= Mols()
 
         for function in self.influents:
-            liq_change, gas_change = function(self)
-            self.influent_values_liq += liq_change
-            self.influent_values_gas += gas_change
+            self.influent_values += function(self)
+
         for function in self.effluents:
-            liq_change, gas_change = function(self)
-            self.effluent_values_liq += liq_change
-            self.effluent_values_gas += gas_change
+            self.effluent_values += function(self)
 
         # dt = self.system.dt # Need to add later
-        self.liq_mol += self.influent_values_liq - self.effluent_values_liq
-        self.gas_mol += self.influent_values_gas - self.effluent_values_gas
-
+        self.mols += self.influent_values - self.effluent_values
 
 def initialize_test_tanks():
     system = System()
     atank = Tank(system, ANODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE, 1.2e5)
 
-    atank.gas_mol["O2"] = (ANODE_SEPARATOR_VOLUME - ANODE_LIQUID_VOLUME) * atank.pressure / (IDEAL_GAS_CONSTANT * atank.temperature)
-    atank.liq_mol["H2O"] = ANODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
+    atank.mols["GO2"] = (ANODE_SEPARATOR_VOLUME - ANODE_LIQUID_VOLUME) * atank.pressure / (IDEAL_GAS_CONSTANT * atank.temperature)
+    atank.mols["LH2O"] = ANODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
 
     # m3 * kg/m3 / kg/mol = mol
 
     ctank = Tank(system, CATHODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE, 30e5)
-    ctank.gas_mol["H2"] = (CATHODE_SEPARATOR_VOLUME - CATHODE_LIQUID_VOLUME) * ctank.pressure / (IDEAL_GAS_CONSTANT * ctank.temperature)
-    ctank.liq_mol["H2O"] = CATHODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
+    ctank.mols["GH2"] = (CATHODE_SEPARATOR_VOLUME - CATHODE_LIQUID_VOLUME) * ctank.pressure / (IDEAL_GAS_CONSTANT * ctank.temperature)
+    ctank.mols["LH2O"] = CATHODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
 
-    print(f"Anode liq: {atank.liq_mol}")
-    print(f"Cathode liq: {ctank.liq_mol}")
-
-    print(f"Anode gas: {atank.gas_mol}")
-    print(f"Cathode gas: {ctank.gas_mol}")
+    print(f"Anode mols: {atank.mols}")
+    print(f"Cathode mols: {ctank.mols}")
 
     return system, atank, ctank
 
