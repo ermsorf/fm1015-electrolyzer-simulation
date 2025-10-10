@@ -1,4 +1,4 @@
-from objects import Tank, System, initialize_test_tanks
+from objects import Tank, Mols, System, initialize_test_tanks
 from parameters import (
 ANODE_REFERENCE_INJECTION,
 ANODE_LIQUID_VOLUME,
@@ -7,10 +7,11 @@ ANODE_SEPARATOR_CONTROLLER_GAIN
 
 def inlet_pump(tank: Tank):
     volume_difference = ANODE_LIQUID_VOLUME - tank.volume
-    inlet_flow = ANODE_REFERENCE_INJECTION + ANODE_SEPARATOR_CONTROLLER_GAIN*volume_difference
+    inlet_flow = ANODE_REFERENCE_INJECTION + ANODE_SEPARATOR_CONTROLLER_GAIN * volume_difference
+    
+    print("Inlet flow (mol/s):", inlet_flow)
 
-    tank.liq_mol["H2O"] += inlet_flow
-    return None
+    return Mols(H2O = inlet_flow), Mols()  # Return changes for liquid and gas phases
 
     
 
@@ -20,6 +21,10 @@ if __name__ == "__main__":
     print("Initial anode tank H2O:", atank.liq_mol["H2O"])
     print("Initial anode tank volume:", atank.volume)
     
-    inlet_pump(atank)
+    atank.add_influent(inlet_pump)
+
+    for n in range(50):
+        atank.liq_mol["H2O"] -= 0.1  # Simulate consumption of H2O
+        atank.update_mol() # runs all influent and effluent functions(here only inlet pump)
+        print(f"Level atank: ", atank.liq_mol["H2O"])
     
-    print("After inlet pump - anode tank H2O:", atank.liq_mol["H2O"])
