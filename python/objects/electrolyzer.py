@@ -2,9 +2,7 @@
 if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd()); print(os.getcwd())
 
 
-from .mols import Mols
-from .system import System
-from .tank import Tank
+from objects import System, Tank, Mols
 from parameters import *
 
 class Electrolyzer:
@@ -71,8 +69,9 @@ class Electrolyzer:
         membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
         membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_O2
         membrane_constant = membrane_size * membrane_properties
-        cathode_pressure = self.cathode.pressure # CHECK
-        anode_pressure = self.anode.pressure # CHECK
+        # TODO change with species-based partial pressure from VT flash
+        cathode_pressure = self.cathode.pressure*self.cathode.gas_mol.get("O2") # CHECK
+        anode_pressure = self.anode.pressure*self.anode.gas_mol.get("O2") # CHECK
         delta_p = cathode_pressure - anode_pressure 
         diffusion = membrane_constant*delta_p
         mols = Mols(O2 = diffusion)
@@ -82,8 +81,9 @@ class Electrolyzer:
         membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
         membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_H2
         membrane_constant = membrane_size * membrane_properties
-        cathode_pressure = self.cathode.pressure # CHECK
-        anode_pressure = self.anode.pressure # CHECK
+        # TODO change with species-based partial pressure from VT flash
+        cathode_pressure = self.cathode.pressure*self.cathode.gas_mol.get("H2") # CHECK
+        anode_pressure = self.anode.pressure*self.anode.gas_mol.get("H2") #HCHECK
         delta_p = cathode_pressure - anode_pressure
         diffusion = membrane_constant*delta_p
         mols = Mols(H2 = diffusion)
@@ -93,11 +93,31 @@ class Electrolyzer:
         raise NotImplementedError("Water diffusion does not occur!")
 
 
+    # TODO look over these to look for følgefeil
     def oxygen_drag(self):
+        drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
+        drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
+        x = self.anode.liquid_fraction.H2O # TODO add this
+        drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
+        out = Mols(H2O=drag)
+        self.anode_send_to_cathode(out)
         self.drag["O2"] = 0
 
     def hydrogen_drag(self):
+        drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
+        drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
+        x = self.anode.liquid_fraction.H2O # TODO add this
+        drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
+        out = Mols(H2O=drag)
+        self.anode_send_to_cathode(out)
         self.drag["H2"] = 0
 
     def water_drag(self):
-        self.drag["H2O"] = 0
+        drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
+        drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
+        x = self.anode.liquid_fraction.H2O # TODO add this
+        drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
+        out = Mols(H2O=drag)
+        self.anode_send_to_cathode(out)
+
+        
