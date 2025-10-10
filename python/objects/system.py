@@ -32,4 +32,4 @@ class System:
 
 # import if running as main - makes IDE happy
 if __name__ == "__main__":
-    from objects.objects import Tank
+    from objects.tank import Tank
