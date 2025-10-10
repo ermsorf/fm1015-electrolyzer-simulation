@@ -3,19 +3,19 @@ if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd())
 from typing import Callable
 from operator import add,sub,mul, truediv
 
-def operate(operator, self: 'Moles', other: 'Moles'):
+def operate(operator, self: 'Mols', other: 'Mols'):
     """
     Generates a function to
     compute A[operator]B
     for two species
     (e.g A+B, A-B, A*B, A/B)
     """
-    out = Moles()
+    out = Mols()
     for attribute in other.species.keys():
         out[attribute] = operator(self.species[attribute], other.species[attribute])
     return out
 
-class Moles():
+class Mols():
     def __init__(self, H2O = 0.0, O2 = 0.0, H2 = 0.0):
         self.species = {"H2O": H2O, "O2": O2, "H2": H2}
         return 
@@ -27,13 +27,13 @@ class Moles():
     def __iter__(self):
         return iter(self.species.values())
     # Math 
-    def __add__(self, other: 'Moles'):
+    def __add__(self, other: 'Mols'):
         return operate(add, self, other)
-    def __sub__(self, other: 'Moles'):
+    def __sub__(self, other: 'Mols'):
         return operate(sub, self, other)
-    def __mul__(self, other: 'Moles'):
+    def __mul__(self, other: 'Mols'):
         return operate(mul, self, other)
-    def __div__(self, other: 'Moles'):
+    def __div__(self, other: 'Mols'):
         return operate(truediv, self, other)
     def __str__(self):
         return (f' - H2O: {self.species["H2O"]}\n'
