@@ -2,7 +2,9 @@
 if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd()); print(os.getcwd())
 
 
-from objects import System, Tank, Moles
+from .mols import Mols
+from .system import System
+from .tank import Tank
 from parameters import *
 
 class Electrolyzer:
@@ -13,8 +15,8 @@ class Electrolyzer:
     def __init__(self, anode: Tank, cathode: Tank):
         self.anode = anode
         self.cathode = cathode 
-        self.anode_count = Moles()
-        self.cathode_count = Moles()
+        self.anode_count = Mols()
+        self.cathode_count = Mols()
         self.ipp = 0
     
     def set_ipp(self, ipp):
@@ -27,20 +29,20 @@ class Electrolyzer:
         #self.cathode.[liq/gas]_mol +=self.cathode_count
         ...
 
-    def anode_send_to_cathode(self, ammount: Moles):
+    def anode_send_to_cathode(self, ammount: Mols):
         self.cathode_generation(ammount)
         self.anode_consumption(ammount)
-    def anode_generation(self, ammount: Moles):
+    def anode_generation(self, ammount: Mols):
         self.anode_count += ammount
-    def anode_consumption(self, ammount: Moles):
+    def anode_consumption(self, ammount: Mols):
         self.anode_count -=ammount
 
-    def cathode_send_to_anode(self, ammount: Moles):
+    def cathode_send_to_anode(self, ammount: Mols):
         self.anode_generation(ammount)
         self.cathode_consumption(ammount)
-    def cathode_generation(self, ammount: Moles):
+    def cathode_generation(self, ammount: Mols):
         self.cathode_count += ammount
-    def cathode_consumption(self, ammount: Moles):
+    def cathode_consumption(self, ammount: Mols):
         self.cathode_count -= ammount
 
     def oxygen_generation(self):
@@ -48,8 +50,8 @@ class Electrolyzer:
         electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
         constant_terms = stochiometric_coefficient * electrolyzer_properties / FARADAY_CONSTANT
         generation = constant_terms*self.ipp
-        moles = Moles(O2 = generation)
-        self.anode_generation(moles)
+        mols = Mols(O2 = generation)
+        self.anode_generation(mols)
 
     def hydrogen_generation(self):
         self.generation["H2"] = 0
@@ -73,8 +75,8 @@ class Electrolyzer:
         anode_pressure = self.anode.pressure # CHECK
         delta_p = cathode_pressure - anode_pressure 
         diffusion = membrane_constant*delta_p
-        moles = Moles(O2 = diffusion)
-        self.anode_send_to_cathode(moles)
+        mols = Mols(O2 = diffusion)
+        self.anode_send_to_cathode(mols)
 
     def hydrogen_diffusion(self):
         membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
@@ -84,8 +86,8 @@ class Electrolyzer:
         anode_pressure = self.anode.pressure # CHECK
         delta_p = cathode_pressure - anode_pressure
         diffusion = membrane_constant*delta_p
-        moles = Moles(H2 = diffusion)
-        self.cathode_send_to_anode(moles)
+        mols = Mols(H2 = diffusion)
+        self.cathode_send_to_anode(mols)
 
     def water_diffusion(self):
         raise NotImplementedError("Water diffusion does not occur!")
