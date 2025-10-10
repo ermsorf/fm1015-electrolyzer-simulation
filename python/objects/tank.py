@@ -47,15 +47,26 @@ class Tank:
         """
         Compute everything ✨
         Apply all functions in influents and effluents to self.
-        Individual functions should return a Mols object with its 
-        modifications.
+        Individual functions should return a tuple of two Mols objects 
+        with its modifications: (liquid_mols, gas_mols).
         """
-        self.influent_values = Mols()
-        self.effluent_values = Mols()
+        self.influent_values_liq = Mols()
+        self.influent_values_gas = Mols()
+        self.effluent_values_liq = Mols()
+        self.effluent_values_gas = Mols()
+
         for function in self.influents:
-            self.influent_values += function(self)
+            liq_change, gas_change = function(self)
+            self.influent_values_liq += liq_change
+            self.influent_values_gas += gas_change
         for function in self.effluents:
-            self.effluent_values += function(self)
+            liq_change, gas_change = function(self)
+            self.effluent_values_liq += liq_change
+            self.effluent_values_gas += gas_change
+
+        # dt = self.system.dt # Need to add later
+        self.liq_mol += self.influent_values_liq - self.effluent_values_liq
+        self.gas_mol += self.influent_values_gas - self.effluent_values_gas
 
 
 def initialize_test_tanks():
