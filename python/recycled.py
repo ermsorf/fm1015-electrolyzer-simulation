@@ -29,45 +29,37 @@ def recycled(tank):
     cathode_mass_rate = cathode_mass_rate_pump(tank)
     
     if cathode_mass_rate <= 0:
-        return Mols(), Mols() 
+        return Mols()  # No recycling if mass rate is zero or negative
     
     # Assume tank and pump concentrations are identical
     try:
-        molar_masses = {"H2O": H2O_MOLAR_MASS, "H2": H2_MOLAR_MASS, "O2": O2_MOLAR_MASS}
+        molar_masses = {"LH2O": H2O_MOLAR_MASS, "LH2": H2_MOLAR_MASS, "LO2": O2_MOLAR_MASS}
         
         # Calculate total mass of liquid in tank
-        total_mass = sum([tank.liq_mol[sp] * molar_masses[sp] for sp in molar_masses.keys()])
+        total_mass = sum([tank.mols[sp] * molar_masses[sp] for sp in molar_masses.keys()])
         
         if total_mass == 0:
-            return Mols(), Mols()
+            return Mols() # Avoid division by zero
     
     except ZeroDivisionError:
-        return Mols(), Mols()
+        return Mols()  # Avoid division by zero
 
     # Calculate mass fractions of each species in the liquid
-    H2_mass_fraction = (tank.liq_mol["H2"] * molar_masses["H2"]) / total_mass
-    O2_mass_fraction = (tank.liq_mol["O2"] * molar_masses["O2"]) / total_mass  
-    H2O_mass_fraction = (tank.liq_mol["H2O"] * molar_masses["H2O"]) / total_mass
-    
+    H2_mass_fraction = (tank.mols["LH2"] * molar_masses["LH2"]) / total_mass
+    O2_mass_fraction = (tank.mols["LO2"] * molar_masses["LO2"]) / total_mass
+    H2O_mass_fraction = (tank.mols["LH2O"] * molar_masses["LH2O"]) / total_mass
+
     # Convert mass flow rates back to molar flow rates
-    H2_molar_flow = (H2_mass_fraction * cathode_mass_rate) / molar_masses["H2"]
-    O2_molar_flow = (O2_mass_fraction * cathode_mass_rate) / molar_masses["O2"]
-    H2O_molar_flow = (H2O_mass_fraction * cathode_mass_rate) / molar_masses["H2O"]
+    H2_molar_flow = (H2_mass_fraction * cathode_mass_rate) / molar_masses["LH2"]
+    O2_molar_flow = (O2_mass_fraction * cathode_mass_rate) / molar_masses["LO2"]
+    H2O_molar_flow = (H2O_mass_fraction * cathode_mass_rate) / molar_masses["LH2O"]
 
-    nd__cr = {
-        "H2O": H2O_molar_flow,
-        "H2": H2_molar_flow,
-        "O2": O2_molar_flow 
-    }
-    mol_l = Mols(O2 = O2_molar_flow, H2 = H2_molar_flow, H2O = H2O_molar_flow)
-    mol_g = Mols()
-
-    return mol_l, mol_g
+    return Mols(LO2 = O2_molar_flow, LH2 = H2_molar_flow, LH2O = H2O_molar_flow)
 
 def cathode_mass_rate_pump(tank):
     """md_p__cr. Compute the mass flow rate of the cathode pump. """
     # Calculate actual liquid volume in tank (convert mols to volume)
-    liquid_volume_actual = tank.liq_mol["H2O"] * H2O_MOLAR_MASS / H2O_DENSITY  # m3
+    liquid_volume_actual = tank.mols["LH2O"] * H2O_MOLAR_MASS / H2O_DENSITY  # m3
     liquid_volume_target = CATHODE_LIQUID_VOLUME  # m3
     volume_error = liquid_volume_actual - liquid_volume_target  # m3
     
@@ -86,16 +78,16 @@ if __name__ == "__main__":
     system, atank, ctank = initialize_test_tanks()
     
     # To test the functions, we can call them and see the returned values
-    liq_change, gas_change = cathode_out_recycled(ctank)
-    print("Molar change from cathode recycled:", liq_change, gas_change)
+    mol_change = cathode_out_recycled(ctank)
+    print("Molar change from cathode recycled:", mol_change)
 
     # To apply the changes, you would do something like this:
     ctank.add_effluent(cathode_out_recycled)
-    print("After removing recycled from cathode tank:", ctank.liq_mol)
+    print("After removing recycled from cathode tank:", ctank.mols)
     print("100 mol water = ", 100 * H2O_MOLAR_MASS / H2O_DENSITY, "m3")
     for n in range(100):
-        ctank.liq_mol["H2O"] += 0.1  # Add some H2O for testing
+        ctank.mols["LH2O"] += 0.1  # Add some H2O for testing
         ctank.update_mol() # runs all influent and effluent functions(here only recycled effluent)
-        print("Level", ctank.liq_mol["H2O"])
+        print("Level", ctank.mols["LH2O"])
 
         
