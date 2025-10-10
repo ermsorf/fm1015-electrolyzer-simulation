@@ -1,3 +1,3 @@
 from .moles import *
-from .objects import *
 from .system import *
+from .tank import *

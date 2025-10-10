@@ -1,11 +1,12 @@
 from parameters import *
-import warnings
 from objects.moles import Moles
-from typing import Callable
 from objects.system import System
+
+from typing import Callable
 
 def bar_to_Pa(p_bar):
     return p_bar * 1e5
+
 class Tank:
     def __init__(self, system, volume, temperature, pressure):
         self.system = system
@@ -80,5 +81,3 @@ def initialize_test_tanks():
 
 if __name__ == "__main__":
     initialize_test_tanks()
-
-
