@@ -16,8 +16,8 @@ def operate(operator, self: 'Mols', other: 'Mols'):
     return out
 
 class Mols():
-    def __init__(self, H2O = 0.0, O2 = 0.0, H2 = 0.0):
-        self.species = {"H2O": H2O, "O2": O2, "H2": H2}
+    def __init__(self, LH2O = 0.0, LO2 = 0.0, LH2 = 0.0, GH2O = 0.0, GO2 = 0.0, GH2 = 0.0):
+        self.species = {"LH2O": LH2O, "LO2": LO2, "LH2": LH2, "GH2O": GH2O, "GO2": GO2, "GH2": GH2}
         return 
     # getting/setting
     def __getitem__(self, name):
@@ -36,22 +36,26 @@ class Mols():
     def __div__(self, other: 'Mols'):
         return operate(truediv, self, other)
     def __str__(self):
-        return (f' - H2O: {self.species["H2O"]}\n'
-               +f' - O2: {self.species["O2"]}\n'
-               +f' - H2: {self.species["H2"]}')
+        return (f' - LH2O: {self.species["LH2O"]}\n'
+               +f' - LO2: {self.species["LO2"]}\n'
+               +f' - LH2: {self.species["LH2"]}\n'
+               +f' - GH2O: {self.species["GH2O"]}\n'
+               +f' - GO2: {self.species["GO2"]}\n'
+               +f' - GH2: {self.species["GH2"]}\n')
     # dict lookups
     @staticmethod
     def keys():
-        return ("H2O", "H2", "O2")
+        return ("LH2O", "LH2", "LO2", "GH2O", "GH2", "GO2")
     def values(self):
         return [self.species[key] for key in self.keys()]
     
 
 
 if __name__ == "__main__":
-    x = Mols(H2 = 1, O2 = 1, H2O = 1)
-    y = Mols(H2 = 2, O2= 2, H2O = 2)
-    z = Mols(H2 = 3, O2= 3, H2O = 3)
+    x = Mols(LH2 = 1, LO2 = 1, LH2O = 1, GH2 = 1, GO2= 1, GH2O = 1)
+    y = Mols(LH2 = 2, LO2 = 2, LH2O = 2, GH2 = 2, GO2= 2, GH2O = 2)
+    z = Mols()
+
     print( x + y + z ) 
     print( x - y - z ) 
     print( x * y * z ) 
