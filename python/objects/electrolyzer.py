@@ -1,3 +1,7 @@
+# run in home folder if running tests 
+if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd()); print(os.getcwd())
+
+
 from objects import System, Tank, Moles
 from parameters import *
 

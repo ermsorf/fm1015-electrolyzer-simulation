@@ -1,3 +1,5 @@
+# run in home folder if running tests 
+if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd())
 class System:
     next_tanks: list['Tank']
     tanks: list['Tank']
