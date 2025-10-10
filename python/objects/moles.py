@@ -1,19 +1,19 @@
+# run in home folder if running tests 
+if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd())
 from typing import Callable
 from operator import add,sub,mul, truediv
 
-def generate_operator(operator: Callable):
+def operate(operator, self: 'Moles', other: 'Moles'):
     """
     Generates a function to
     compute A[operator]B
     for two species
     (e.g A+B, A-B, A*B, A/B)
     """
-    def operate(self: 'Moles', other: 'Moles'):
-        out = Moles()
-        for attribute in other.species.keys():
-            out[attribute] = operator(self.species[attribute], other.species[attribute])
-        return out
-    return operate
+    out = Moles()
+    for attribute in other.species.keys():
+        out[attribute] = operator(self.species[attribute], other.species[attribute])
+    return out
 
 class Moles():
     def __init__(self, H2O = 0.0, O2 = 0.0, H2 = 0.0):
@@ -28,17 +28,13 @@ class Moles():
         return iter(self.species.values())
     # Math 
     def __add__(self, other: 'Moles'):
-        op = generate_operator(add)
-        return op(self, other)
+        return operate(add, self, other)
     def __sub__(self, other: 'Moles'):
-        op = generate_operator(sub)
-        return op(self, other)
+        return operate(sub, self, other)
     def __mul__(self, other: 'Moles'):
-        op = generate_operator(mul)
-        return op(self, other)
+        return operate(mul, self, other)
     def __div__(self, other: 'Moles'):
-        op = generate_operator(truediv)
-        return op(self, other)
+        return operate(truediv, self, other)
     def __str__(self):
         return (f' - H2O: {self.species["H2O"]}\n'
                +f' - O2: {self.species["O2"]}\n'
