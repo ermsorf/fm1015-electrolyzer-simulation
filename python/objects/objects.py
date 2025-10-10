@@ -1,8 +1,8 @@
 from parameters import *
 import warnings
-from moles import Moles
+from objects.moles import Moles
 from typing import Callable
-from objects import System
+from objects.system import System
 
 def bar_to_Pa(p_bar):
     return p_bar * 1e5
