@@ -1,5 +1,7 @@
+# run in home folder if running tests 
+if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd())
 from parameters import *
-from objects.moles import Moles
+from objects.mols import Mols
 from objects.system import System
 
 from typing import Callable
@@ -16,13 +18,13 @@ class Tank:
         self.pressure = pressure  # Pa
 
 
-        self.liq_mol = Moles()
-        self.gas_mol = Moles()
+        self.liq_mol = Mols()
+        self.gas_mol = Mols()
         
         self.influents = list()
         self.effluents = list()
-        self.influent_values =  Moles()
-        self.effluent_values = Moles()
+        self.influent_values =  Mols()
+        self.effluent_values = Mols()
 
 
     def add_influent(self, influent: Callable) -> None:
@@ -45,11 +47,11 @@ class Tank:
         """
         Compute everything ✨
         Apply all functions in influents and effluents to self.
-        Individual functions should return a Moles object with its 
+        Individual functions should return a Mols object with its 
         modifications.
         """
-        self.influent_values = Moles()
-        self.effluent_values = Moles()
+        self.influent_values = Mols()
+        self.effluent_values = Mols()
         for function in self.influents:
             self.influent_values += function(self)
         for function in self.effluents:
