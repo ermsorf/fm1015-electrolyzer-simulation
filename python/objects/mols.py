@@ -45,3 +45,15 @@ class Mols():
         return ("H2O", "H2", "O2")
     def values(self):
         return [self.species[key] for key in self.keys()]
+    
+
+
+if __name__ == "__main__":
+    x = Mols(H2 = 1, O2 = 1, H2O = 1)
+    y = Mols(H2 = 2, O2= 2, H2O = 2)
+    z = Mols(H2 = 3, O2= 3, H2O = 3)
+    print( x + y + z ) 
+    print( x - y - z ) 
+    print( x * y * z ) 
+    print( x / y / z )  
+        
