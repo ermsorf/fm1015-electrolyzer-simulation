@@ -48,7 +48,7 @@ class Electrolyzer:
         electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
         constant_terms = stochiometric_coefficient * electrolyzer_properties / FARADAY_CONSTANT
         generation = constant_terms*self.ipp
-        mols = Mols(O2 = generation)
+        mols = Mols(GO2 = generation)
         self.anode_generation(mols)
 
     def hydrogen_generation(self):
@@ -74,7 +74,7 @@ class Electrolyzer:
         anode_pressure = self.anode.pressure*self.anode.gas_mol.get("O2") # CHECK
         delta_p = cathode_pressure - anode_pressure 
         diffusion = membrane_constant*delta_p
-        mols = Mols(O2 = diffusion)
+        mols = Mols(GO2 = diffusion)
         self.anode_send_to_cathode(mols)
 
     def hydrogen_diffusion(self):
@@ -86,7 +86,7 @@ class Electrolyzer:
         anode_pressure = self.anode.pressure*self.anode.gas_mol.get("H2") #HCHECK
         delta_p = cathode_pressure - anode_pressure
         diffusion = membrane_constant*delta_p
-        mols = Mols(H2 = diffusion)
+        mols = Mols(GH2 = diffusion)
         self.cathode_send_to_anode(mols)
 
     def water_diffusion(self):
@@ -97,18 +97,17 @@ class Electrolyzer:
     def oxygen_drag(self):
         drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
         drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
-        x = self.anode.liquid_fraction.H2O # TODO add this
+        x = self.anode.liquid_fraction.O2 # TODO add this
         drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
-        out = Mols(H2O=drag)
+        out = Mols(LO2=drag)
         self.anode_send_to_cathode(out)
-        self.drag["O2"] = 0
 
     def hydrogen_drag(self):
         drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
         drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
-        x = self.anode.liquid_fraction.H2O # TODO add this
+        x = self.anode.liquid_fraction.H2 # TODO add this
         drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
-        out = Mols(H2O=drag)
+        out = Mols(LH2=drag)
         self.anode_send_to_cathode(out)
         self.drag["H2"] = 0
 
@@ -117,7 +116,7 @@ class Electrolyzer:
         drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
         x = self.anode.liquid_fraction.H2O # TODO add this
         drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
-        out = Mols(H2O=drag)
+        out = Mols(LH2O=drag)
         self.anode_send_to_cathode(out)
 
         
