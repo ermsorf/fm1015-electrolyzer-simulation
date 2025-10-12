@@ -3,6 +3,7 @@ if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd())
 from parameters import *
 from objects.mols import Mols
 from objects.system import System
+import vt_flash
 
 from typing import Callable
 
@@ -17,14 +18,39 @@ class Tank:
         self.temperature = temperature  # K
         self.pressure = pressure  # Pa
 
-
-        self.mols = Mols()
-        
         self.influents = list()
         self.effluents = list()
         self.influent_values =  Mols()
         self.effluent_values = Mols()
 
+        self.mols = Mols()
+        
+
+    def update_vt_flash(self):
+        results = vt_flash.vtflash(self.volume, self.temperature, self.mols.get_sums().values())
+        (
+            self.liquid_fractions,
+            self.gas_fractions,
+            self.liquid_total_molecount,
+            self.gas_total_molecount,
+            self.liquid_volume,
+            self.gas_volume,
+            self.pressure
+        ) = results
+        # CHECK are these values correctly updated?:
+        # (fear is, these values are added to the total somehow / not 
+        # representative of a partial volume etc etc.)
+        # (fear 2: drag etc should be calculated before updating mole counts)
+        self.mols=Mols(
+            LH2O=self.liquid_fractions[0]*self.liquid_total_molecount,
+            LH2=self.liquid_fractions[1]*self.liquid_total_molecount,
+            LO2=self.liquid_fractions[2]*self.liquid_total_molecount,
+            GH2O=self.gas_fractions[0]*self.gas_total_molecount,
+            GH2=self.gas_fractions[1]*self.gas_total_molecount,
+            GO2=self.gas_fractions[2]*self.gas_total_molecount
+        )
+
+        
 
     def add_influent(self, influent: Callable) -> None:
         """
