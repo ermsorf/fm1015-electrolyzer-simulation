@@ -43,6 +43,13 @@ class Electrolyzer:
     def cathode_consumption(self, ammount: Mols):
         self.cathode_count -= ammount
 
+    # TODO check if these should be implemented
+    def water_generation(self):
+        pass
+
+    def hydrogen_generation(self):
+        pass
+
     def oxygen_generation(self):
         stochiometric_coefficient = STOICHIOMETRIC_MATRIX["O2"] / ELECTRON_STOICHIOMETRIC_MATRIX
         electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
@@ -51,25 +58,8 @@ class Electrolyzer:
         mols = Mols(GO2 = generation)
         self.anode_generation(mols)
 
-    def hydrogen_generation(self):
-        self.generation["H2"] = 0
-
-    def water_generation(self):
-        self.generation["H2O"] = 0
-
-    
-    def oxygen_diffusion(self):
-        """compute oxygen diffusion and send to cathode"""
-        membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
-        membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_O2
-        membrane_constant = membrane_size * membrane_properties
-        anode_pressure = self.anode.gas_fractions["O2"]*self.anode.pressure
-        cathode_pressure = self.cathode.gas_fractions["O2"]*self.cathode.pressure
-        # TODO check that pressure & flow direction makes sense @Petter
-        delta_p = anode_pressure - cathode_pressure 
-        diffusion = membrane_constant*delta_p
-        mols = Mols(GO2 = diffusion)
-        self.anode_send_to_cathode(mols)
+    def water_diffusion(self):
+        raise NotImplementedError("Water diffusion does not occur!")
 
     def hydrogen_diffusion(self):
         membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
@@ -83,28 +73,20 @@ class Electrolyzer:
         mols = Mols(GH2 = diffusion)
         self.cathode_send_to_anode(mols)
 
-    def water_diffusion(self):
-        raise NotImplementedError("Water diffusion does not occur!")
-
+    def oxygen_diffusion(self):
+        """compute oxygen diffusion and send to cathode"""
+        membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
+        membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_O2
+        membrane_constant = membrane_size * membrane_properties
+        anode_pressure = self.anode.gas_fractions["O2"]*self.anode.pressure
+        cathode_pressure = self.cathode.gas_fractions["O2"]*self.cathode.pressure
+        # TODO check that pressure & flow direction makes sense @Petter
+        delta_p = anode_pressure - cathode_pressure 
+        diffusion = membrane_constant*delta_p
+        mols = Mols(GO2 = diffusion)
+        self.anode_send_to_cathode(mols)
 
     # TODO look over these to look for følgefeil
-    def oxygen_drag(self):
-        drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
-        drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
-        x = self.anode.liquid_fraction.O2 # TODO add this
-        drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
-        out = Mols(LO2=drag)
-        self.anode_send_to_cathode(out)
-
-    def hydrogen_drag(self):
-        drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
-        drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
-        x = self.anode.liquid_fraction.H2 # TODO add this
-        drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
-        out = Mols(LH2=drag)
-        self.anode_send_to_cathode(out)
-        self.drag["H2"] = 0
-
     def water_drag(self):
         drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
         drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
@@ -114,3 +96,19 @@ class Electrolyzer:
         self.anode_send_to_cathode(out)
 
         
+    def hydrogen_drag(self):
+        drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
+        drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
+        x = self.anode.liquid_fraction.H2 # TODO add this
+        drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
+        out = Mols(LH2=drag)
+        self.anode_send_to_cathode(out)
+        self.drag["H2"] = 0
+
+    def oxygen_drag(self):
+        drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
+        drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
+        x = self.anode.liquid_fraction.O2 # TODO add this
+        drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
+        out = Mols(LO2=drag)
+        self.anode_send_to_cathode(out)

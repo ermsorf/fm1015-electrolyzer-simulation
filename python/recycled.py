@@ -54,7 +54,7 @@ def recycled(tank):
     H2_molar_flow = (H2_mass_fraction * cathode_mass_rate) / molar_masses["LH2"]
     O2_molar_flow = (O2_mass_fraction * cathode_mass_rate) / molar_masses["LO2"]
 
-    return Mols(LO2 = O2_molar_flow, LH2 = H2_molar_flow, LH2O = H2O_molar_flow)
+    return Mols(LH2O = H2O_molar_flow,LO2 = O2_molar_flow, LH2 = H2_molar_flow)
 
 def cathode_mass_rate_pump(tank):
     """md_p__cr. Compute the mass flow rate of the cathode pump. """
