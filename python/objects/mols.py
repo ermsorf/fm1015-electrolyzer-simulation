@@ -49,6 +49,12 @@ class Mols():
     def values(self):
         return [self.species[key] for key in self.keys()]
     
+    def get_sums(self):
+        sp = self.species
+        return{"H2O": sp["LH2O"] + sp["GH2O"],
+                "H2": sp["LH2"] + sp["GH2"],
+                "O2": sp["LO2"] + sp["GO2"]
+                }
 
 
 if __name__ == "__main__":
