@@ -60,20 +60,13 @@ class Electrolyzer:
     
     def oxygen_diffusion(self):
         """compute oxygen diffusion and send to cathode"""
-        # use pressure "absolute value":
-        # Negative flow in base formula
-        # implies flow from anode to cathode.
-        # (explicitly: stating negative flow cathode -> anode)
-        # This is handled by flow direction instead of sign.
-        # -AT
         membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
         membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_O2
         membrane_constant = membrane_size * membrane_properties
-        # TODO change with species-based partial pressure from VT flash
-        
-        cathode_pressure = self.cathode.pressure*self.cathode.gas_mol.get("O2") # CHECK
-        anode_pressure = self.anode.pressure*self.anode.gas_mol.get("O2") # CHECK
-        delta_p = cathode_pressure - anode_pressure 
+        anode_pressure = self.anode.gas_fractions["O2"]*self.anode.pressure
+        cathode_pressure = self.cathode.gas_fractions["O2"]*self.cathode.pressure
+        # TODO check that pressure & flow direction makes sense @Petter
+        delta_p = anode_pressure - cathode_pressure 
         diffusion = membrane_constant*delta_p
         mols = Mols(GO2 = diffusion)
         self.anode_send_to_cathode(mols)
@@ -82,9 +75,9 @@ class Electrolyzer:
         membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
         membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_H2
         membrane_constant = membrane_size * membrane_properties
-        # TODO change with species-based partial pressure from VT flash
-        cathode_pressure = self.cathode.pressure*self.cathode.gas_mol.get("H2") # CHECK
-        anode_pressure = self.anode.pressure*self.anode.gas_mol.get("H2") #HCHECK
+        anode_pressure = self.anode.gas_fractions["H2"]*self.anode.pressure
+        cathode_pressure = self.cathode.gas_fractions["H2"]*self.cathode.pressure
+        # TODO check that pressure & flow direction makes sense @Petter
         delta_p = cathode_pressure - anode_pressure
         diffusion = membrane_constant*delta_p
         mols = Mols(GH2 = diffusion)
