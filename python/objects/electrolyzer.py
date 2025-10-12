@@ -88,27 +88,35 @@ class Electrolyzer:
 
     # TODO look over these to look for følgefeil
     def water_drag(self):
-        drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
+        DRAG_BIAS = 0.3e-1
+        DRAG_SCALING_FACTOR = 1.34e-2
+        drag_efficiency = DRAG_BIAS + DRAG_SCALING_FACTOR*self.anode.temperature 
         drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
-        x = self.anode.liquid_fraction.H2O # TODO add this
-        drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
+        H2O_INDEX = 0
+        water_fraction = self.anode.liquid_fractions[H2O_INDEX]
+        drag = water_fraction*drag_capacity*ELECTROLYZER_CELL_COUNT
         out = Mols(LH2O=drag)
         self.anode_send_to_cathode(out)
 
         
     def hydrogen_drag(self):
-        drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
+        DRAG_BIAS = 0.3e-1
+        DRAG_SCALING_FACTOR = 1.34e-2
+        drag_efficiency = DRAG_BIAS + DRAG_SCALING_FACTOR*self.anode.temperature 
         drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
-        x = self.anode.liquid_fraction.H2 # TODO add this
-        drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
+        H2_INDEX = 1
+        hydrogen_fraction = self.anode.liquid_fractions[H2_INDEX]
+        drag = hydrogen_fraction*drag_capacity*ELECTROLYZER_CELL_COUNT
         out = Mols(LH2=drag)
         self.anode_send_to_cathode(out)
-        self.drag["H2"] = 0
 
     def oxygen_drag(self):
-        drag_efficiency = 0.3e-1 + 1.34e-2*self.anode.temperature 
+        DRAG_BIAS = 0.3e-1
+        DRAG_SCALING_FACTOR = 1.34e-2
+        drag_efficiency = DRAG_BIAS + DRAG_SCALING_FACTOR*self.anode.temperature 
         drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
-        x = self.anode.liquid_fraction.O2 # TODO add this
-        drag = x*ELECTROLYZER_CELL_COUNT*drag_capacity
+        O2_INDEX = 2
+        oxygen_fraction = self.anode.liquid_fractions[O2_INDEX]
+        drag = oxygen_fraction*drag_capacity*ELECTROLYZER_CELL_COUNT
         out = Mols(LO2=drag)
         self.anode_send_to_cathode(out)
