@@ -45,14 +45,14 @@ def recycled(tank):
         return Mols()  # Avoid division by zero
 
     # Calculate mass fractions of each species in the liquid
+    H2O_mass_fraction = (tank.mols["LH2O"] * molar_masses["LH2O"]) / total_mass
     H2_mass_fraction = (tank.mols["LH2"] * molar_masses["LH2"]) / total_mass
     O2_mass_fraction = (tank.mols["LO2"] * molar_masses["LO2"]) / total_mass
-    H2O_mass_fraction = (tank.mols["LH2O"] * molar_masses["LH2O"]) / total_mass
 
     # Convert mass flow rates back to molar flow rates
+    H2O_molar_flow = (H2O_mass_fraction * cathode_mass_rate) / molar_masses["LH2O"]
     H2_molar_flow = (H2_mass_fraction * cathode_mass_rate) / molar_masses["LH2"]
     O2_molar_flow = (O2_mass_fraction * cathode_mass_rate) / molar_masses["LO2"]
-    H2O_molar_flow = (H2O_mass_fraction * cathode_mass_rate) / molar_masses["LH2O"]
 
     return Mols(LO2 = O2_molar_flow, LH2 = H2_molar_flow, LH2O = H2O_molar_flow)
 

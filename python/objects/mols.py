@@ -16,8 +16,8 @@ def operate(operator, self: 'Mols', other: 'Mols'):
     return out
 
 class Mols():
-    def __init__(self, LH2O = 0.0, LO2 = 0.0, LH2 = 0.0, GH2O = 0.0, GO2 = 0.0, GH2 = 0.0):
-        self.species = {"LH2O": LH2O, "LO2": LO2, "LH2": LH2, "GH2O": GH2O, "GO2": GO2, "GH2": GH2}
+    def __init__(self, LH2O = 0.0, LH2 = 0.0, LO2 = 0.0, GH2O = 0.0, GH2 = 0.0, GO2 = 0.0):
+        self.species = {"LH2O": LH2O, "LO2": LH2, "LH2": LO2, "GH2O": GH2O, "GO2": GH2, "GH2": GO2}
         return 
     # getting/setting
     def __getitem__(self, name):
@@ -37,11 +37,11 @@ class Mols():
         return operate(truediv, self, other)
     def __str__(self):
         return (f' - LH2O: {self.species["LH2O"]}\n'
-               +f' - LO2: {self.species["LO2"]}\n'
                +f' - LH2: {self.species["LH2"]}\n'
+               +f' - LO2: {self.species["LO2"]}\n'
                +f' - GH2O: {self.species["GH2O"]}\n'
-               +f' - GO2: {self.species["GO2"]}\n'
-               +f' - GH2: {self.species["GH2"]}\n')
+               +f' - GH2: {self.species["GH2"]}\n'
+               +f' - GO2: {self.species["GO2"]}\n')
     # dict lookups
     @staticmethod
     def keys():
