@@ -21,7 +21,7 @@ class Electrolyzer:
         self.ipp = ipp
 
     # Update mole counts:
-    def push_vales(self):
+    def push_values(self):
         # TODO find out how the mole phase distribution works
         #self.anode.[liq/gas]_mol +=self.anode_count
         #self.cathode.[liq/gas]_mol +=self.cathode_count
@@ -70,6 +70,7 @@ class Electrolyzer:
         membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_O2
         membrane_constant = membrane_size * membrane_properties
         # TODO change with species-based partial pressure from VT flash
+        
         cathode_pressure = self.cathode.pressure*self.cathode.gas_mol.get("O2") # CHECK
         anode_pressure = self.anode.pressure*self.anode.gas_mol.get("O2") # CHECK
         delta_p = cathode_pressure - anode_pressure 
