@@ -86,37 +86,14 @@ class Electrolyzer:
         mols = Mols(GO2 = diffusion)
         self.anode_send_to_cathode(mols)
 
-    # TODO look over these to look for følgefeil
-    def water_drag(self):
+    # TODO double check the formula
+    def drag(self):
         DRAG_BIAS = 0.3e-1
         DRAG_SCALING_FACTOR = 1.34e-2
         drag_efficiency = DRAG_BIAS + DRAG_SCALING_FACTOR*self.anode.temperature 
         drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
-        H2O_INDEX = 0
-        water_fraction = self.anode.liquid_fractions[H2O_INDEX]
-        drag = water_fraction*drag_capacity*ELECTROLYZER_CELL_COUNT
-        out = Mols(LH2O=drag)
-        self.anode_send_to_cathode(out)
-
-        
-    def hydrogen_drag(self):
-        DRAG_BIAS = 0.3e-1
-        DRAG_SCALING_FACTOR = 1.34e-2
-        drag_efficiency = DRAG_BIAS + DRAG_SCALING_FACTOR*self.anode.temperature 
-        drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
-        H2_INDEX = 1
-        hydrogen_fraction = self.anode.liquid_fractions[H2_INDEX]
-        drag = hydrogen_fraction*drag_capacity*ELECTROLYZER_CELL_COUNT
-        out = Mols(LH2=drag)
-        self.anode_send_to_cathode(out)
-
-    def oxygen_drag(self):
-        DRAG_BIAS = 0.3e-1
-        DRAG_SCALING_FACTOR = 1.34e-2
-        drag_efficiency = DRAG_BIAS + DRAG_SCALING_FACTOR*self.anode.temperature 
-        drag_capacity = drag_efficiency * (MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT) * self.ipp
-        O2_INDEX = 2
-        oxygen_fraction = self.anode.liquid_fractions[O2_INDEX]
-        drag = oxygen_fraction*drag_capacity*ELECTROLYZER_CELL_COUNT
-        out = Mols(LO2=drag)
-        self.anode_send_to_cathode(out)
+        fractions = self.anode.liquid_fractions
+        out = Mols()
+        for fraction, sp in zip(fractions, ["LH2O", "LH2","LO2"]):
+            out[sp] = fraction*drag_capacity*ELECTROLYZER_CELL_COUNT
+        self.anode_send_to_cathode(out) # TODO Check flow directions 

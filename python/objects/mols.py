@@ -12,6 +12,7 @@ def operate(operator, self: 'Mols', other: 'Mols'):
     """
     out = Mols()
     for attribute in other.species.keys():
+        if other.species[attribute] == 0: out[attribute] = 0; continue
         out[attribute] = operator(self.species[attribute], other.species[attribute])
     return out
 
@@ -33,7 +34,7 @@ class Mols():
         return operate(sub, self, other)
     def __mul__(self, other: 'Mols'):
         return operate(mul, self, other)
-    def __div__(self, other: 'Mols'):
+    def __truediv__(self, other: 'Mols'):
         return operate(truediv, self, other)
     def __str__(self):
         return (f' - LH2O: {self.species["LH2O"]}\n'
