@@ -1,6 +1,6 @@
-from objects import Tank, System
-from objects.mols import Mols
-from parameters import (
+from python.objects.tank import Tank
+from python.objects.mols import Mols
+from python.parameters import (
 CATHODE_LIQUID_VOLUME, CATHODE_SEPARATOR_CONTROLLER_GAIN,
 SYSTEM_TEMPERATURE,
 H2O_DENSITY, H2O_MOLAR_MASS, H2_MOLAR_MASS, O2_MOLAR_MASS
@@ -74,7 +74,7 @@ def cathode_mass_rate_pump(tank):
 
 
 if __name__ == "__main__":
-    from objects.tank import initialize_test_tanks
+    from python.objects.system import initialize_test_tanks
     system, atank, ctank = initialize_test_tanks()
     
     # To test the functions, we can call them and see the returned values

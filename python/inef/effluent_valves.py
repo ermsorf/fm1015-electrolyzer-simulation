@@ -1,5 +1,5 @@
-from parameters import *
-from objects import Mols
+from python.parameters import *
+from python.objects.mols import Mols
 from typing import Literal
 
 def general_valve_effluent(tank: 'Tank', tank_type = Literal["anode", "cathode"]):
