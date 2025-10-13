@@ -87,7 +87,7 @@ if __name__ == "__main__":
     print("100 mol water = ", 100 * H2O_MOLAR_MASS / H2O_DENSITY, "m3")
     for n in range(100):
         ctank.mols["LH2O"] += 0.1  # Add some H2O for testing
-        ctank.update_mol() # runs all influent and effluent functions(here only recycled effluent)
+        ctank.step() # runs all influent and effluent functions(here only recycled effluent)
         print("Level", ctank.mols["LH2O"])
 
         

@@ -1,32 +1,43 @@
 # run in home folder if running tests 
 if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd()); print(os.getcwd())
 
-
 from objects import System, Tank, Mols
 from parameters import *
+from warnings import warn
 
 class Electrolyzer:
-    drag: dict
-    diffusion: dict
-    generation: dict
 
     def __init__(self, anode: Tank, cathode: Tank):
         self.anode = anode
         self.cathode = cathode 
         self.anode_count = Mols()
         self.cathode_count = Mols()
-        self.ipp = 0
-    
-    def set_ipp(self, ipp):
+        self.ipp = float()
+        self.step_completed = False # In the future, reset this on global step
+
+    # Update electrolyzer state
+    def step(self):
+        if self.step_completed: return
+        self.set_ipp()
+        self.generation()
+        self.drag()
+        self.hydrogen_diffusion()
+        self.oxygen_diffusion()
+        self.step_completed = True
+
+    def reset_frame(self):
+        self.step_completed = False
+
+    def _set_ipp(self, ipp):
         self.ipp = ipp
 
-    # Update mole counts:
-    def push_values(self):
-        # TODO find out how the mole phase distribution works
-        #self.anode.[liq/gas]_mol +=self.anode_count
-        #self.cathode.[liq/gas]_mol +=self.cathode_count
-        ...
+    def set_ipp(self):
+        ipp = IPP_BASE_VALUE
+        if self.anode.system.time >= IPP_HEAVYSIDE_TIME:
+            ipp -= IPP_HEAVYSIDE_STEP
+        self._set_ipp(ipp)
 
+    # Update mole counts
     def anode_send_to_cathode(self, ammount: Mols):
         self.cathode_generation(ammount)
         self.anode_consumption(ammount)
@@ -43,7 +54,11 @@ class Electrolyzer:
     def cathode_consumption(self, ammount: Mols):
         self.cathode_count -= ammount
 
+    # Compute electrolyzer generations
     def generation(self):
+        if self.step_completed:
+            warn("Called electrolyzer twice")
+            return
         stochiometric_vector = STOICHIOMETRIC_MATRIX / ELECTRON_STOICHIOMETRIC_MATRIX
         electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
         electric_properties = self.ipp * electrolyzer_properties / FARADAY_CONSTANT
@@ -57,6 +72,9 @@ class Electrolyzer:
         raise NotImplementedError("Water diffusion does not occur!")
 
     def hydrogen_diffusion(self):
+        if self.step_completed:
+            warn("Called electrolyzer twice")
+            return
         membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
         membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_H2
         membrane_constant = membrane_size * membrane_properties
@@ -69,6 +87,9 @@ class Electrolyzer:
         self.cathode_send_to_anode(mols)
 
     def oxygen_diffusion(self):
+        if self.step_completed:
+            warn("Called electrolyzer twice")
+            return
         """compute oxygen diffusion and send to cathode"""
         membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
         membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_O2
@@ -83,6 +104,9 @@ class Electrolyzer:
 
     # TODO double check the formula
     def drag(self):
+        if self.step_completed:
+            warn("Called electrolyzer twice")
+            return
         DRAG_BIAS = 0.3e-1
         DRAG_SCALING_FACTOR = 1.34e-2
         drag_efficiency = DRAG_BIAS + DRAG_SCALING_FACTOR*self.anode.temperature 

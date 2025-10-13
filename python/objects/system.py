@@ -1,13 +1,20 @@
 # run in home folder if running tests 
 if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd())
+
+from objects.electrolyzer import Electrolyzer
+from objects.tank import Tank
+from typing import List
 class System:
-    next_tanks: list['Tank']
-    tanks: list['Tank']
+    next_tanks: List[Tank]
+    tanks: List[Tank]
     cellcount: int
+    time: float
+    electrolyzer: Electrolyzer
     def __init__(self):
-        self.tanks = list()
-        self.next_tanks = list()
-        self.cellcount = None # set to 0?
+        self.tanks: List[Tank] = list()
+        self.next_tanks: List[Tank] = list()
+        self.cellcount = int()
+        self.time = float()
 
     def add_tank(self, tank):
         self.next_tanks.append(tank)
@@ -22,14 +29,19 @@ class System:
         for tank in self.next_tanks:
             self.tanks.append(tank)
 
-    def update_state(self):
+    def clear_step_flags(self):
+        for tank in self.tanks:
+            tank.step_completed = False
+        self.electrolyzer.step_completed = False
+
+    def step(self):
+        self.electrolyzer.step()
         for tank in self.next_tanks:
-            tank.update_mole_balance()
+            tank.step()
         self.reload_tanks()
+        self.clear_step_flags()
+
+
 
     def log_state(self):
         pass
-
-# import if running as main - makes IDE happy
-if __name__ == "__main__":
-    from objects.tank import Tank

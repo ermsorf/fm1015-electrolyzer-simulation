@@ -11,6 +11,7 @@ def bar_to_Pa(p_bar):
     return p_bar * 1e5
 
 class Tank:
+    system: System
     def __init__(self, system, volume, temperature, pressure):
         self.system = system
 
@@ -18,13 +19,23 @@ class Tank:
         self.temperature = temperature  # K
         self.pressure = pressure  # Pa
 
-        self.influents = list()
-        self.effluents = list()
+        self.influent_functions = list()
+        self.effluent_functions = list()
+
         self.influent_values =  Mols()
         self.effluent_values = Mols()
 
         self.mols = Mols()
+        self.step_completed = False
         
+
+    def step(self):
+        if self.step_completed: return
+        for fun in self.influent_functions:
+            self.mols +=fun(self)
+        for fun in self.effluent_functions:
+            self.mols -=fun(self)
+        self.step_completed = True
 
     def update_vt_flash(self):
         results = vt_flash.vtflash(self.volume, self.temperature, self.mols.get_sums().values())
@@ -57,7 +68,7 @@ class Tank:
         List of functions that add mols to the tank.
         Each function should take the tank as an argument and modify its liq_mol and gas_mol attributes.
         """
-        self.influents.append(influent)
+        self.influent_functions.append(influent)
 
     def add_effluent(self, effluent: Callable) -> None:
         """
@@ -65,27 +76,7 @@ class Tank:
         Each function should take the tank as an argument
         and modify its liq_mol and gas_mol attributes.
         """
-        self.effluents.append(effluent)
-
-    # Mol --------------------------------------------
-    def update_mol(self):
-        """
-        Compute everything ✨
-        Apply all functions in influents and effluents to self.
-        Individual functions should return a tuple of two Mols objects 
-        with its modifications: (liquid_mols, gas_mols).
-        """
-        self.influent_values = Mols()
-        self.effluent_values= Mols()
-
-        for function in self.influents:
-            self.influent_values += function(self)
-
-        for function in self.effluents:
-            self.effluent_values += function(self)
-
-        # dt = self.system.dt # Need to add later
-        self.mols += self.influent_values - self.effluent_values
+        self.effluent_functions.append(effluent)
 
 def initialize_test_tanks():
     system = System()

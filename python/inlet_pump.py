@@ -25,6 +25,6 @@ if __name__ == "__main__":
 
     for n in range(50):
         atank.mols["LH2O"] -= 0.1  # Simulate consumption of H2O
-        atank.update_mol() # runs all influent and effluent functions(here only inlet pump)
+        atank.step() # runs all influent and effluent functions(here only inlet pump)
         print(f"Level atank: ", atank.mols["LH2O"])
     
