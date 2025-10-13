@@ -43,11 +43,24 @@ class Electrolyzer:
     def cathode_consumption(self, ammount: Mols):
         self.cathode_count -= ammount
 
-    # TODO check if these should be implemented
+    # TODO: For loop? :3 (merge all calculations into one method)
     def water_generation(self):
+        stochiometric_coefficient = STOICHIOMETRIC_MATRIX["H2O"] / ELECTRON_STOICHIOMETRIC_MATRIX
+        electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
+        constant_terms = stochiometric_coefficient * electrolyzer_properties / FARADAY_CONSTANT
+        generation = constant_terms*self.ipp
+        mols = Mols(GH2O = generation) # CHECK: Is this truly gas?
+        self.anode_consumption(mols) # double-check sign in simulation
         pass
 
     def hydrogen_generation(self):
+        # TODO This should also be done
+        stochiometric_coefficient = STOICHIOMETRIC_MATRIX["H2"] / ELECTRON_STOICHIOMETRIC_MATRIX
+        electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
+        constant_terms = stochiometric_coefficient * electrolyzer_properties / FARADAY_CONSTANT
+        generation = constant_terms*self.ipp
+        mols = Mols(GH2 = generation)# CHECK: Is this truly gas?
+        self.anode_generation(mols)
         pass
 
     def oxygen_generation(self):
@@ -55,7 +68,7 @@ class Electrolyzer:
         electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
         constant_terms = stochiometric_coefficient * electrolyzer_properties / FARADAY_CONSTANT
         generation = constant_terms*self.ipp
-        mols = Mols(GO2 = generation)
+        mols = Mols(GO2 = generation)# CHECK: Is this truly gas?
         self.anode_generation(mols)
 
     def water_diffusion(self):
