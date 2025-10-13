@@ -48,15 +48,13 @@ class System:
         self.anode.update_vt_flash()
         self.cathode.update_vt_flash()
 
-        print(self.anode.pressure, self.cathode.pressure)
-
         self.electrolyzer = Electrolyzer(self.anode, self.cathode)
 
         # Add influent and effluent functions to tanks
-        self.anode.add_influent(inlet_pump, anode_in_recycled, self.electrolyzer.get_counts_anode)
-        self.anode.add_effluent(anode_valve_effluent, self.electrolyzer.anode_send_to_cathode)
-        self.cathode.add_influent(cathode_out_recycled, self.electrolyzer.get_counts_cathode)
-        self.cathode.add_effluent(cathode_valve_effluent, self.electrolyzer.cathode_send_to_anode)
+        self.anode.add_influent(inlet_pump, anode_in_recycled)
+        self.anode.add_effluent(anode_valve_effluent)
+        self.cathode.add_influent(cathode_out_recycled)
+        self.cathode.add_effluent(cathode_valve_effluent)
         
 
     def run_simulation(self, duration, dt):
@@ -80,13 +78,17 @@ class System:
             # Update tank mole counts
             self.anode.update_mols()
             self.cathode.update_mols()
+            
+            # Apply electrolyzer generation/consumption to tanks
+            self.anode.mols += self.electrolyzer.get_counts_anode() * dt
+            self.cathode.mols += self.electrolyzer.get_counts_cathode() * dt
 
             # Reset electrolyzer for next step
             self.electrolyzer.reset_frame()
 
             # Update tank states (Apply VT flash calculations)
             self.anode.update_vt_flash()
-            self.cathode.update_vt_flash()
+            self.cathode.update_vt_flash()  
 
             # Iterate time
             self.time += dt
