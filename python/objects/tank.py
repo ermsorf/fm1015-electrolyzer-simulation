@@ -1,11 +1,12 @@
 # run in home folder if running tests 
 if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd())
-from parameters import *
-from objects.mols import Mols
-from objects.system import System
-import vt_flash
+from typing import TYPE_CHECKING, Callable
+from python.parameters import *
+from python.objects.mols import Mols
+from python import vt_flash
 
-from typing import Callable
+if TYPE_CHECKING:
+    from python.objects.system import System
 
 def bar_to_Pa(p_bar):
     return p_bar * 1e5

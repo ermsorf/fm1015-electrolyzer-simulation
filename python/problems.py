@@ -1,5 +1,5 @@
-from parameters import *
-from objects import *
+from python.parameters import *
+from python.objects import *
 
 def water_consumption_rate(current):
     """

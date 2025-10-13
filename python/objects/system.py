@@ -1,16 +1,16 @@
 # run in home folder if running tests 
 if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd())
 
-from objects.electrolyzer import Electrolyzer
-from objects.tank import Tank
-from inlet_pump import inlet_pump
-from recycled import anode_in_recycled, cathode_out_recycled
-from effluent_valves import anode_valve_effluent, cathode_valve_effluent
+from python.objects.electrolyzer import Electrolyzer
+from python.objects.tank import Tank
+from python.objects.mols import Mols
+from python.inef import inlet_pump, anode_in_recycled, cathode_out_recycled, anode_valve_effluent, cathode_valve_effluent
 from typing import List
-from parameters import (
-    ANODE_SEPARATOR_VOLUME,
-    CATHODE_SEPARATOR_VOLUME,
-    SYSTEM_TEMPERATURE,
+from python.parameters import (
+    ANODE_SEPARATOR_VOLUME, ANODE_LIQUID_VOLUME, ANODE_EXTERNAL_PRESSURE,
+    CATHODE_SEPARATOR_VOLUME, CATHODE_LIQUID_VOLUME, CATHODE_EXTERNAL_PRESSURE,
+    SYSTEM_TEMPERATURE, 
+    IDEAL_GAS_CONSTANT, H2O_DENSITY, H2O_MOLAR_MASS,
 )
 
 def placeholder(number): ...

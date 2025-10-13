@@ -1,9 +1,14 @@
 # run in home folder if running tests 
 if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd()); print(os.getcwd())
 
-from objects import Mols
-from parameters import *
+from typing import TYPE_CHECKING
+from python.parameters import *
 from warnings import warn
+
+if TYPE_CHECKING:
+    from python.objects.tank import Tank
+
+from python.objects.mols import Mols
 
 class Electrolyzer:
 
