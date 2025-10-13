@@ -42,8 +42,8 @@ class Tank:
             self.effluent_values += fun(self)
         
     def update_mols(self):
-        self.mols += self.influent_values
-        self.mols -= self.effluent_values
+        self.mols += self.influent_values * self.system.dt
+        self.mols -= self.effluent_values * self.system.dt
 
 
     def update_vt_flash(self):
