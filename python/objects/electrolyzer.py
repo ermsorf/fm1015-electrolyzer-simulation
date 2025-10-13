@@ -100,8 +100,10 @@ class Electrolyzer:
         membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
         membrane_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_PERMEABILITY_H2
         membrane_constant = membrane_size * membrane_properties
-        anode_pressure = self.anode.gas_fractions["H2"]*self.anode.pressure
-        cathode_pressure = self.cathode.gas_fractions["H2"]*self.cathode.pressure
+
+        # NOTE: H2 is index 1 in gas fractions, I DONT LIKE THIS
+        anode_pressure = self.anode.gas_fractions[1]*self.anode.pressure # H2 is index 1 in gas fractions.
+        cathode_pressure = self.cathode.gas_fractions[1]*self.cathode.pressure # H2 is index 1 in gas fractions
         # TODO check that pressure & flow direction makes sense @Petter
         delta_p = cathode_pressure - anode_pressure
         diffusion = membrane_constant*delta_p
@@ -116,8 +118,9 @@ class Electrolyzer:
         membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
         membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_O2
         membrane_constant = membrane_size * membrane_properties
-        anode_pressure = self.anode.gas_fractions["O2"]*self.anode.pressure
-        cathode_pressure = self.cathode.gas_fractions["O2"]*self.cathode.pressure
+        # NOTE: O2 is index 2 in gas fractions, I DONT LIKE THIS
+        anode_pressure = self.anode.gas_fractions[2]*self.anode.pressure
+        cathode_pressure = self.cathode.gas_fractions[2]*self.cathode.pressure
         # TODO check that pressure & flow direction makes sense @Petter
         delta_p = anode_pressure - cathode_pressure 
         diffusion = membrane_constant*delta_p
