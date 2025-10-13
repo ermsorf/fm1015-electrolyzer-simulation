@@ -32,9 +32,26 @@ class Mols():
         return operate(add, self, other)
     def __sub__(self, other: 'Mols'):
         return operate(sub, self, other)
-    def __mul__(self, other: 'Mols'):
+    def __mul__(self, other):
+        # Handle scalar multiplication
+        if isinstance(other, (int, float)):
+            out = Mols()
+            for key in self.species.keys():
+                out[key] = self.species[key] * other
+            return out
+        # Handle Mols * Mols
         return operate(mul, self, other)
-    def __truediv__(self, other: 'Mols'):
+    def __rmul__(self, other):
+        # Handle reverse multiplication (scalar * Mols)
+        return self.__mul__(other)
+    def __truediv__(self, other):
+        # Handle scalar division
+        if isinstance(other, (int, float)):
+            out = Mols()
+            for key in self.species.keys():
+                out[key] = self.species[key] / other
+            return out
+        # Handle Mols / Mols
         return operate(truediv, self, other)
     def __str__(self):
         return (f' - LH2O: {self.species["LH2O"]}\n'
