@@ -82,11 +82,11 @@ if __name__ == '__main__':
     for a in ans:
         print(a)
 """ Expected values
-xa ≈ 0.999984, 0, 1.5588 · 10−5
+xa ≈ 0.999984, 0, 1.5588 · 1e-5
 ya = (0.16589, 0, 0.83411)
-naℓ ≈ 555.87 mol
+nal ≈ 555.87 mol
 nag ≈ 0.85569 mol
-V aℓ ≈ 1.8326 · 10−5 m3/mol
+V al ≈ 1.8326 · 1e-5 m3/mol
 V ag ≈ 0.02315 m3/mol
 pa ≈ 1.19732 · 105 Pa.
 """
