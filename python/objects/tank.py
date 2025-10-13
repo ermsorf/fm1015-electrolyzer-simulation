@@ -12,12 +12,11 @@ def bar_to_Pa(p_bar):
 
 class Tank:
     system: System
-    def __init__(self, system, volume, temperature, pressure):
+    def __init__(self, system, volume, temperature):
         self.system = system
 
         self.volume = volume  # m3
         self.temperature = temperature  # K
-        self.pressure = pressure  # Pa
 
         self.influent_functions = list()
         self.effluent_functions = list()
