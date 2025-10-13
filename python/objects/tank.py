@@ -76,28 +76,6 @@ class Tank:
         Each function should take the tank as an argument
         and modify its liq_mol and gas_mol attributes.
         """
-        self.effluent_functions.append(effluent)
-
-# TODO push function to other file / keep for now and kill down the line
-def initialize_test_tanks():
-    system = System()
-    atank = Tank(system, ANODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE, 1.2e5)
-
-    atank.mols["GO2"] = (ANODE_SEPARATOR_VOLUME - ANODE_LIQUID_VOLUME) * atank.pressure / (IDEAL_GAS_CONSTANT * atank.temperature)
-    atank.mols["LH2O"] = ANODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
-
-    # m3 * kg/m3 / kg/mol = mol
-
-    ctank = Tank(system, CATHODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE, 30e5)
-    ctank.mols["GH2"] = (CATHODE_SEPARATOR_VOLUME - CATHODE_LIQUID_VOLUME) * ctank.pressure / (IDEAL_GAS_CONSTANT * ctank.temperature)
-    ctank.mols["LH2O"] = CATHODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
-
-    print(f"Anode mols: {atank.mols}")
-    print(f"Cathode mols: {ctank.mols}")
-
-    return system, atank, ctank
-
-
 
 if __name__ == "__main__":
     initialize_test_tanks()
