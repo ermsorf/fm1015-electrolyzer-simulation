@@ -14,70 +14,81 @@ from python.parameters import (
 )
 
 def placeholder(number): ...
+
+
+
+
 class System:
-    next_tanks: List[Tank]
-    tanks: List[Tank]
+    
     cellcount: int
     time: float
     electrolyzer: Electrolyzer
+
+
     def __init__(self):
-        self.tanks: List[Tank] = list()
-        self.initialize_tanks()
-        self.next_tanks: List[Tank] = self.tanks
 
-        self.cellcount = int()
+        self.initialize_system()
+
         self.time = float()
-
-    def step(self):
-        self.electrolyzer.step()
-        for tank in self.next_tanks:
-            tank.step()
-        self.reload_tanks()
-        self.clear_step_flags()
-    
-    def initialize_tanks(self):
-        # Create tanks
-        anode = Tank(self, ANODE_SEPARATOR_VOLUME,SYSTEM_TEMPERATURE)
-        cathode = Tank(self, CATHODE_SEPARATOR_VOLUME,SYSTEM_TEMPERATURE)
-        # add anode flows
-        anode.add_influent(inlet_pump)
-        anode.add_influent(self.electrolyzer.get_counts_anode)
-        anode.add_influent(anode_in_recycled)
-
-        #anode.add_effluent(self.electrolyzer.get_counts_anode) # implicit from influent sums
-        anode.add_effluent(anode_valve_effluent)
-
-        # add cathode flows
-        cathode.add_influent(self.electrolyzer.get_counts_cathode)
-
-        #cathode.add_effluent(self.electrolyzer.get_counts_anode) # implicit from influent
-        cathode.add_effluent(cathode_out_recycled)
-        cathode.add_effluent(cathode_valve_effluent)
-
-        # commit initialized tanks to self.tanks
-        self.add_tank(anode)
-        self.add_tank(cathode)
-
-    def add_tank(self, tank):
-        self.next_tanks.append(tank)
-        self.tanks.append(tank)
-    
-    def reload_tanks(self):
-        """
-        update the old_tank values to be 
-        equal to the current tank state.
-        """
-        self.tanks = list()
-        for tank in self.next_tanks:
-            self.tanks.append(tank)
-
-    def clear_step_flags(self):
-        for tank in self.tanks:
-            tank.step_completed = False
-        self.electrolyzer.step_completed = False
+        self.dt = float()
 
 
+    def initialize_system(self):
+        self.anode = Tank(self, ANODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE)
+        self.cathode = Tank(self, CATHODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE)
+
+        self.anode.mols = Mols(
+            GO2 = (ANODE_SEPARATOR_VOLUME - ANODE_LIQUID_VOLUME) * ANODE_EXTERNAL_PRESSURE / (IDEAL_GAS_CONSTANT * self.anode.temperature),
+            LH2O = ANODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
+        )
+        self.cathode.mols = Mols(
+            GH2 = (CATHODE_SEPARATOR_VOLUME - CATHODE_LIQUID_VOLUME) * CATHODE_EXTERNAL_PRESSURE / (IDEAL_GAS_CONSTANT * self.cathode.temperature),
+            LH2O = CATHODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
+        )
+        self.anode.update_vt_flash()
+        self.cathode.update_vt_flash()
+
+        print(self.anode.pressure, self.cathode.pressure)
+
+        self.electrolyzer = Electrolyzer(self.anode, self.cathode)
+
+        # Add influent and effluent functions to tanks
+        self.anode.add_influent(inlet_pump, anode_in_recycled, self.electrolyzer.get_counts_anode)
+        self.anode.add_effluent(anode_valve_effluent, self.electrolyzer.anode_send_to_cathode)
+        self.cathode.add_influent(cathode_out_recycled, self.electrolyzer.get_counts_cathode)
+        self.cathode.add_effluent(cathode_valve_effluent, self.electrolyzer.cathode_send_to_anode)
+        
+
+    def run_simulation(self, duration, dt):
+        self.time = 0.0
+        self.dt = dt
+        steps = int(duration/dt)
+
+        for step in range(steps):
+            self.step(dt)
+
+    def step(self, dt):
+            # Update electrolyzer production rate values. (Updating electrolyzer influent and effluent return values)
+            self.electrolyzer.step()
+
+            # Update tank states (Apply influent and effluent functions)
+            self.anode.calc_rates()
+            self.cathode.calc_rates()
+            # NOTE: order of operations here matters, so step in system not in tank. 
+            # First calculate rates, then update mols.
+
+            # Update tank mole counts
+            self.anode.update_mols()
+            self.cathode.update_mols()
+
+            # Reset electrolyzer for next step
+            self.electrolyzer.reset_frame()
+
+            # Update tank states (Apply VT flash calculations)
+            self.anode.update_vt_flash()
+            self.cathode.update_vt_flash()
+
+            # Iterate time
+            self.time += dt
 
 
-    def log_state(self):
-        pass
