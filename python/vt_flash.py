@@ -31,7 +31,7 @@ f__lsat_h2o = phi__lsat_h2o*p__sat_h2o
 H_maxh2 = 7.54e4*ATM_TO_PA #Hmax
 H_maxo2 = 7.08e4*ATM_TO_PA
 T_maxh2 = 1/(3.09e-3)   #Tmax
-T_maxo2 = 1/(2.73*10**-3) # TODO 2.73e-3 is more precise, but different --> Breaking
+T_maxo2 = 1/(2.73e-3) 
 T_ch2o  = 641.7 #Critical temp [K]
 
 T_dimh2 = (1/T_maxh2-1/T_ch2o)/(1/T-1/T_ch2o) #Dimensionless T
@@ -81,7 +81,7 @@ def vtflash(V,T,n):
 if __name__ == '__main__':
     ans = (vtflash(V_a,T_a,n_a))
     target_values = [
-        [0.99998439638184, 0.00000000e+00, 1.5603618159872485e-05],
+        [0.99998439638184, 0.00000000e+00, 1.560361815987251e-05],
         [0.1659012208029624, 0.0, 0.8340987791970376],
         555.8667142157208,
         0.8556857842792654,
