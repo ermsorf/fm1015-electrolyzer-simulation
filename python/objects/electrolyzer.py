@@ -55,21 +55,25 @@ class Electrolyzer:
         
 
     # Update mole counts
-    def anode_send_to_cathode(self, ammount: Mols):
-        self.cathode_generation(ammount)
-        self.anode_consumption(ammount)
-    def anode_generation(self, ammount: Mols):
-        self.anode_count += ammount
-    def anode_consumption(self, ammount: Mols):
-        self.anode_count -=ammount
+    def anode_send_to_cathode(self, amount: Mols):
+        self.cathode_generation(amount)
+        self.anode_consumption(amount)
 
-    def cathode_send_to_anode(self, ammount: Mols):
-        self.anode_generation(ammount)
-        self.cathode_consumption(ammount)
-    def cathode_generation(self, ammount: Mols):
-        self.cathode_count += ammount
-    def cathode_consumption(self, ammount: Mols):
-        self.cathode_count -= ammount
+    def anode_generation(self, amount: Mols):
+        self.anode_count += amount
+
+    def anode_consumption(self, amount: Mols):
+        self.anode_count -= amount
+
+    def cathode_send_to_anode(self, amount: Mols):
+        self.anode_generation(amount)
+        self.cathode_consumption(amount)
+
+    def cathode_generation(self, amount: Mols):
+        self.cathode_count += amount
+
+    def cathode_consumption(self, amount: Mols):
+        self.cathode_count -= amount
 
 
     # Compute electrolyzer generations
@@ -78,9 +82,12 @@ class Electrolyzer:
             warn("Called electrolyzer twice")
             return
         
+        electric_properties = self.ipp * ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT
         stochiometric_vector = [STOICHIOMETRIC_MATRIX[sp]/ELECTROLYZER_CELL_COUNT for sp in STOICHIOMETRIC_MATRIX.keys()]
         mols = Mols()
+        # TODO check if sp is liquid or gas @Fredrik/group 
         for stochiometric_coefficient, sp in zip(stochiometric_vector, ["GH2O", "GH2","GO2"]):
+            mols[sp] = stochiometric_coefficient*electric_properties 
         self.anode_generation(mols) # double-check sign in simulation
 
     def water_diffusion(self):
@@ -91,7 +98,7 @@ class Electrolyzer:
             warn("Called electrolyzer twice")
             return
         membrane_size = MEMBRANE_AREA_SUPERFICIAL / MEMBRANE_THICKNESS
-        membrane_properties = ELECTROLYZER_CELL_COUNT*MEMBRANE_PERMEABILITY_H2
+        membrane_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_PERMEABILITY_H2
         membrane_constant = membrane_size * membrane_properties
         anode_pressure = self.anode.gas_fractions["H2"]*self.anode.pressure
         cathode_pressure = self.cathode.gas_fractions["H2"]*self.cathode.pressure
