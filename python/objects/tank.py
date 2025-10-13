@@ -77,6 +77,7 @@ class Tank:
         """
         self.effluent_functions.append(effluent)
 
+# TODO push function to other file / keep for now and kill down the line
 def initialize_test_tanks():
     system = System()
     atank = Tank(system, ANODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE, 1.2e5)

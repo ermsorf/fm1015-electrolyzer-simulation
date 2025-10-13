@@ -3,6 +3,9 @@ if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd())
 
 from objects.electrolyzer import Electrolyzer
 from objects.tank import Tank
+from inlet_pump import inlet_pump
+from recycled import anode_in_recycled, cathode_out_recycled
+from effluent_valves import anode_valve_effluent, cathode_valve_effluent
 from typing import List
 from parameters import (
     ANODE_SEPARATOR_VOLUME,
@@ -37,18 +40,19 @@ class System:
         anode = Tank(self, ANODE_SEPARATOR_VOLUME,SYSTEM_TEMPERATURE)
         cathode = Tank(self, CATHODE_SEPARATOR_VOLUME,SYSTEM_TEMPERATURE)
         # add anode flows
-        anode.add_influent(placeholder(1))
-        anode.add_influent(placeholder(2))
+        anode.add_influent(inlet_pump)
+        anode.add_influent(self.electrolyzer.get_counts_anode)
+        anode.add_influent(anode_in_recycled)
 
-        anode.add_effluent(placeholder(3))
-        anode.add_effluent(placeholder(4))
+        #anode.add_effluent(self.electrolyzer.get_counts_anode) # implicit from influent sums
+        anode.add_effluent(anode_valve_effluent)
 
         # add cathode flows
-        cathode.add_influent(placeholder(5))
-        cathode.add_influent(placeholder(6))
+        cathode.add_influent(self.electrolyzer.get_counts_cathode)
 
-        cathode.add_effluent(placeholder(7))
-        cathode.add_effluent(placeholder(8))
+        #cathode.add_effluent(self.electrolyzer.get_counts_anode) # implicit from influent
+        cathode.add_effluent(cathode_out_recycled)
+        cathode.add_effluent(cathode_valve_effluent)
 
         # commit initialized tanks to self.tanks
         self.add_tank(anode)
