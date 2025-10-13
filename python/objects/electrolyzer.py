@@ -15,6 +15,7 @@ class Electrolyzer:
         self.ipp = float()
         self.step_completed = False # In the future, reset this on global step
 
+
     # Update electrolyzer state
     def step(self):
         if self.step_completed: return
@@ -36,6 +37,17 @@ class Electrolyzer:
         if self.anode.system.time >= IPP_HEAVYSIDE_TIME:
             ipp -= IPP_HEAVYSIDE_STEP
         self._set_ipp(ipp)
+        
+
+    # read state:
+    def get_counts_anode(self):
+        assert self.step_completed, "Tried to access values without updating electrolyzer state"
+        return self.anode_count
+
+    def get_counts_cathode(self):
+        assert self.step_completed, "Tried to access values without updating electrolyzer state"
+        return self.cathode_count
+        
 
     # Update mole counts
     def anode_send_to_cathode(self, ammount: Mols):
@@ -53,6 +65,7 @@ class Electrolyzer:
         self.cathode_count += ammount
     def cathode_consumption(self, ammount: Mols):
         self.cathode_count -= ammount
+
 
     # Compute electrolyzer generations
     def generation(self):
