@@ -72,7 +72,7 @@ class Electrolyzer:
         if self.step_completed:
             warn("Called electrolyzer twice")
             return
-        stochiometric_vector = STOICHIOMETRIC_MATRIX / ELECTRON_STOICHIOMETRIC_MATRIX
+        stochiometric_vector = [STOICHIOMETRIC_MATRIX[sp] / ELECTRON_STOICHIOMETRIC_MATRIX for sp in ["H20", "H2", "O2"]]
         electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
         electric_properties = self.ipp * electrolyzer_properties / FARADAY_CONSTANT
         mols = Mols()
