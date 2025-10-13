@@ -12,7 +12,7 @@ def bar_to_Pa(p_bar):
     return p_bar * 1e5
 
 class Tank:
-    system: System
+    system: 'System'
     def __init__(self, system, volume, temperature):
         self.system = system
 
@@ -28,17 +28,27 @@ class Tank:
         self.mols = Mols()
         self.step_completed = False
         
+        self.step_completed = False # In the future, reset this on global step
 
-    def step(self):
-        if self.step_completed: return
+
+    def calc_rates(self):
+        self.influent_values = Mols() # reset to zero
+        self.effluent_values = Mols() # reset to zero
+
         for fun in self.influent_functions:
-            self.mols +=fun(self)
+            self.influent_values += fun(self)
+
         for fun in self.effluent_functions:
-            self.mols -=fun(self)
-        self.step_completed = True
+            self.effluent_values += fun(self)
+        
+    def update_mols(self):
+        self.mols += self.influent_values
+        self.mols -= self.effluent_values
+
 
     def update_vt_flash(self):
-        results = vt_flash.vtflash(self.volume, self.temperature, self.mols.get_sums().values())
+        """ Updates tank state using VT flash calculations. Updates mole fractions"""
+        results = vt_flash.vtflash(self.volume, self.temperature, list(self.mols.get_sums().values()))
         (
             self.liquid_fractions,
             self.gas_fractions,
@@ -78,5 +88,3 @@ class Tank:
         """
         self.effluent_functions.extend(effluent)
 
-if __name__ == "__main__":
-    initialize_test_tanks()
