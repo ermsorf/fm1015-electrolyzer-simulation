@@ -77,13 +77,10 @@ class Electrolyzer:
         if self.step_completed:
             warn("Called electrolyzer twice")
             return
-        stochiometric_vector = STOICHIOMETRIC_MATRIX / ELECTRON_STOICHIOMETRIC_MATRIX
-        electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
-        electric_properties = self.ipp * electrolyzer_properties / FARADAY_CONSTANT
+        
+        stochiometric_vector = [STOICHIOMETRIC_MATRIX[sp]/ELECTROLYZER_CELL_COUNT for sp in STOICHIOMETRIC_MATRIX.keys()]
         mols = Mols()
-        # TODO check if sp is liquid or gas @Fredrik/group
         for stochiometric_coefficient, sp in zip(stochiometric_vector, ["GH2O", "GH2","GO2"]):
-            mols[sp] = stochiometric_coefficient*electric_properties
         self.anode_generation(mols) # double-check sign in simulation
 
     def water_diffusion(self):
