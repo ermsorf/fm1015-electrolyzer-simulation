@@ -63,19 +63,20 @@ class Tank:
 
         
 
-    def add_influent(self, influent: Callable) -> None:
+    def add_influent(self, *influent: Callable) -> None:
         """
         List of functions that add mols to the tank.
         Each function should take the tank as an argument and modify its liq_mol and gas_mol attributes.
         """
-        self.influent_functions.append(influent)
+        self.influent_functions.extend(influent)
 
-    def add_effluent(self, effluent: Callable) -> None:
+    def add_effluent(self, *effluent: Callable) -> None:
         """
         List of functions that remove mols from the tank.
         Each function should take the tank as an argument
         and modify its liq_mol and gas_mol attributes.
         """
+        self.effluent_functions.extend(effluent)
 
 if __name__ == "__main__":
     initialize_test_tanks()
