@@ -1,13 +1,13 @@
 # run in home folder if running tests 
 if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd()); print(os.getcwd())
 
-from objects import System, Tank, Mols
+from objects import Mols
 from parameters import *
 from warnings import warn
 
 class Electrolyzer:
 
-    def __init__(self, anode: Tank, cathode: Tank):
+    def __init__(self, anode: 'Tank', cathode: 'Tank'):
         self.anode = anode
         self.cathode = cathode 
         self.anode_count = Mols()
@@ -116,3 +116,6 @@ class Electrolyzer:
         for fraction, sp in zip(fractions, ["LH2O", "LH2","LO2"]):
             out[sp] = fraction*drag_capacity*ELECTROLYZER_CELL_COUNT
         self.anode_send_to_cathode(out) # TODO Check flow directions 
+
+if __name__ == "__main__":
+    from objects.tank import Tank
