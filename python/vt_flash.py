@@ -79,8 +79,22 @@ def vtflash(V,T,n):
 
 if __name__ == '__main__':
     ans = (vtflash(V_a,T_a,n_a))
-    for a in ans:
-        print(a)
+    target_values = [
+        [0.99998439638184, 0.00000000e+00, 1.5603618159872485e-05],
+        [0.1659012208029624, 0.0, 0.8340987791970376],
+        555.8667142157208,
+        0.8556857842792654,
+        1.832575476118332e-05,
+        0.023154904848707365,
+        119726.20009420183
+    ]
+    for a, t in zip(ans,target_values):
+        if isinstance(t, list):
+            for (asublist, tsublist) in zip(a,t):
+                assert asublist == tsublist, "sublist changed"
+        else:
+            assert a == t, "value changed"
+    
 """ Expected values
 xa ≈ 0.999984, 0, 1.5588 · 10−5
 ya = (0.16589, 0, 0.83411)
