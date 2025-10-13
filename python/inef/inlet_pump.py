@@ -11,7 +11,8 @@ def inlet_pump(tank: Tank):
     inlet_flow = ANODE_REFERENCE_INJECTION + ANODE_SEPARATOR_CONTROLLER_GAIN * volume_difference
     
     print("Inlet flow (mol/s):", inlet_flow)
-
+    if inlet_flow < 0:
+        inlet_flow = 0  # Prevent negative flow rates
     return Mols(LH2O=inlet_flow) 
 
     
@@ -27,6 +28,7 @@ if __name__ == "__main__":
 
     for n in range(50):
         atank.mols["LH2O"] -= 0.1  # Simulate consumption of H2O
-        atank.step() # runs all influent and effluent functions(here only inlet pump)
+        atank.calc_rates() # runs all influent and effluent functions(here only inlet pump)
+        atank.update_mols()
         print(f"Level atank: ", atank.mols["LH2O"])
     
