@@ -1,42 +1,43 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Oct  4 11:10:24 2025
-
-@author: tehpe
-"""
 # Parameters for testing
 import numpy as np
+from parameters import *
 
-V_a = 0.030 # Anode volume, [M^3]
-T_a = 60+273.15 # Anode temperature, [K]
+V_a = ANODE_SEPARATOR_VOLUME # Anode volume, [M^3]
+T_a = SYSTEM_TEMPERATURE # Anode temperature, [K]
+T = T_a # Whatever tbh OBS DETTE ER LITT JUKS
 n_a = [556, 0, 0.7224] # Total number of moles (H2O, H2, O2) in anode tank 
 
 n_ag = np.zeros(3) # Array to hold number of moles in anode, gas
 n_al = np.zeros(3) # Array to hold number of moles in anode, liquid
 p_a = np.zeros(3) # Pressure in anode
 
-T = T_a # Whatever tbh OBS DETTE ER LITT JUKS
-A_h2o = 5.11564 #Antoine constants ABC for H2O
-B_h2o = 1687.537
-C_h2o = 230.17
-R = 8.314 # J/mol*K
+R = IDEAL_GAS_CONSTANT # J/mol*K
 
-p__sat_h2o = 10**(A_h2o - B_h2o/(C_h2o+T-273.15))*100000 #Saturation pressure of H2O at T (54) [Pa]
-vspec__lsat_h2o = (2.23-3.332*10**-3*T+6.421*10**-6*T**2)/10**5 #Specific volume of H2O at T (55) [m^3/mole]
-phi__lsat_h2o = 1.0012-1.6*10**-3*np.exp(8.7*((T-273.15)/373.15)) 
-f__lsat_h2o = phi__lsat_h2o*p__sat_h2o #Fugacity
 
-H_maxh2 = 7.54*10**4*101325 #Hmax
-H_maxo2 = 7.08*10**4*101325
-T_maxh2 = 1/(3.09*10**-3)   #Tmax
-T_maxo2 = 1/(2.73*10**-3)
-T_ch2o  = 641.7             #Critical temp [K]
+# liquid saturation
+p__sat_h2o = 10**(ANTOINE_A - ANTOINE_B/(ANTOINE_C+T+KELVIN_TO_CELSIUS))*BAR_TO_PA #Saturation pressure of H2O at T (54) [Pa]
+SATURATION_A = 2.23
+SATURATION_B = -3.332e-3
+SATURATION_C = 6.421e-6
+vspec__lsat_h2o = (SATURATION_A+SATURATION_B*T+SATURATION_C*T**2)*1e-5 #Specific volume of H2O at T (55) [m^3/mole]
+# Phi
+PHI_CONSTANT = 1.0012
+PHI_SCALING = -1.6e-3
+phi_exponential = np.exp(8.7*((T+KELVIN_TO_CELSIUS)/373.15))
+phi__lsat_h2o = PHI_CONSTANT + PHI_SCALING*phi_exponential
+#Fugacity
+f__lsat_h2o = phi__lsat_h2o*p__sat_h2o 
+
+H_maxh2 = 7.54e4*ATM_TO_PA #Hmax
+H_maxo2 = 7.08e4*ATM_TO_PA
+T_maxh2 = 1/(3.09e-3)   #Tmax
+T_maxo2 = 1/(2.73*10**-3) # TODO 2.73e-3 is more precise, but different --> Breaking
+T_ch2o  = 641.7 #Critical temp [K]
 
 T_dimh2 = (1/T_maxh2-1/T_ch2o)/(1/T-1/T_ch2o) #Dimensionless T
 T_dimo2 = (1/T_maxo2-1/T_ch2o)/(1/T-1/T_ch2o)
 H_dimh2  = 10**-(1.142-2.846/T_dimh2+2.486/T_dimh2**2-0.9761/T_dimh2**3+0.2001/T_dimh2**4) #Dimensionless H
 H_dimo2  = 10**-(1.142-2.846/T_dimo2+2.486/T_dimo2**2-0.9761/T_dimo2**3+0.2001/T_dimo2**4)
-
 
 H_h2h2o = H_maxh2*H_dimh2 #H value for species
 H_o2h2o = H_maxo2*H_dimo2
