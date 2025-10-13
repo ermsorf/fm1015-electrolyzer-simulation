@@ -43,33 +43,15 @@ class Electrolyzer:
     def cathode_consumption(self, ammount: Mols):
         self.cathode_count -= ammount
 
-    # TODO: For loop? :3 (merge all calculations into one method)
-    def water_generation(self):
-        stochiometric_coefficient = STOICHIOMETRIC_MATRIX["H2O"] / ELECTRON_STOICHIOMETRIC_MATRIX
+    def generation(self):
+        stochiometric_vector = STOICHIOMETRIC_MATRIX / ELECTRON_STOICHIOMETRIC_MATRIX
         electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
-        constant_terms = stochiometric_coefficient * electrolyzer_properties / FARADAY_CONSTANT
-        generation = constant_terms*self.ipp
-        mols = Mols(GH2O = generation) # CHECK: Is this truly gas?
-        self.anode_consumption(mols) # double-check sign in simulation
-        pass
-
-    def hydrogen_generation(self):
-        # TODO This should also be done
-        stochiometric_coefficient = STOICHIOMETRIC_MATRIX["H2"] / ELECTRON_STOICHIOMETRIC_MATRIX
-        electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
-        constant_terms = stochiometric_coefficient * electrolyzer_properties / FARADAY_CONSTANT
-        generation = constant_terms*self.ipp
-        mols = Mols(GH2 = generation)# CHECK: Is this truly gas?
-        self.anode_generation(mols)
-        pass
-
-    def oxygen_generation(self):
-        stochiometric_coefficient = STOICHIOMETRIC_MATRIX["O2"] / ELECTRON_STOICHIOMETRIC_MATRIX
-        electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
-        constant_terms = stochiometric_coefficient * electrolyzer_properties / FARADAY_CONSTANT
-        generation = constant_terms*self.ipp
-        mols = Mols(GO2 = generation)# CHECK: Is this truly gas?
-        self.anode_generation(mols)
+        electric_properties = self.ipp * electrolyzer_properties / FARADAY_CONSTANT
+        mols = Mols()
+        # TODO check if sp is liquid or gas @Fredrik/group
+        for stochiometric_coefficient, sp in zip(stochiometric_vector, ["GH2O", "GH2","GO2"]):
+            mols[sp] = stochiometric_coefficient*electric_properties
+        self.anode_generation(mols) # double-check sign in simulation
 
     def water_diffusion(self):
         raise NotImplementedError("Water diffusion does not occur!")
