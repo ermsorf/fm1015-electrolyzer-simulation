@@ -11,14 +11,19 @@ def anode_in_recycled(anode_tank):
     Add recycled into anode tank.
     Returns the molar changes for liquid and gas phases.
     """
-    return recycled(anode_tank)
+    cathode_tank = anode_tank.system.cathode
+    result = recycled(cathode_tank)
+    # print("Recycled to anode (mol/s):", result)
+    return result
 
 def cathode_out_recycled(cathode_tank):
     """
     Remove recycled from cathode tank.
     Returns the molar changes for liquid and gas phases.
     """
-    return recycled(cathode_tank)
+    result = recycled(cathode_tank)
+    # print("Recycled from cathode (mol/s):", result)
+    return result
 
 
 def recycled(tank):
