@@ -12,13 +12,13 @@ def operate(operator, self: 'Mols', other: 'Mols'):
     """
     out = Mols()
     for attribute in other.species.keys():
-        if other.species[attribute] == 0: out[attribute] = 0; continue
+        if other.species[attribute] == 0: out[attribute] = self.species[attribute]; continue
         out[attribute] = operator(self.species[attribute], other.species[attribute])
     return out
 
 class Mols():
     def __init__(self, LH2O = 0.0, LH2 = 0.0, LO2 = 0.0, GH2O = 0.0, GH2 = 0.0, GO2 = 0.0):
-        self.species = {"LH2O": LH2O, "LO2": LH2, "LH2": LO2, "GH2O": GH2O, "GO2": GH2, "GH2": GO2}
+        self.species = {"LH2O": LH2O, "LH2": LH2, "LO2": LO2, "GH2O": GH2O, "GH2": GH2, "GO2": GO2}
         return 
     # getting/setting
     def __getitem__(self, name):
