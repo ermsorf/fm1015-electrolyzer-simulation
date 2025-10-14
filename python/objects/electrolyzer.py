@@ -30,6 +30,8 @@ class Electrolyzer:
         self.step_completed = True
 
     def reset_frame(self):
+        self.anode_count = Mols()
+        self.cathode_count = Mols()
         self.step_completed = False
         
 
