@@ -11,9 +11,10 @@ def operate(operator, self: 'Mols', other: 'Mols'):
     (e.g A+B, A-B, A*B, A/B)
     """
     out = Mols()
-    for attribute in other.species.keys():
-        if other.species[attribute] == 0: out[attribute] = self.species[attribute]; continue
-        out[attribute] = operator(self.species[attribute], other.species[attribute])
+    for attribute in Mols.keys():
+        val_self = self.species.get(attribute, 0)
+        val_other = other.species.get(attribute, 0)
+        out[attribute] = operator(val_self, val_other)
     return out
 
 class Mols():
@@ -79,12 +80,34 @@ class Mols():
 
 
 if __name__ == "__main__":
-    x = Mols(LH2 = 1, LO2 = 1, LH2O = 1, GH2 = 1, GO2= 1, GH2O = 1)
-    y = Mols(LH2 = 2, LO2 = 2, LH2O = 2, GH2 = 2, GO2= 2, GH2O = 2)
+    x = Mols(LH2O=1, LH2=1, LO2=1, GH2O=1, GH2=1, GO2=1)
+    y = Mols(LH2O=2, LH2=2, LO2=2, GH2O=2, GH2=2, GO2=2)
     z = Mols()
 
-    print( x + y + z ) 
-    print( x - y - z ) 
-    print( x * y * z ) 
-    print( x / y / z )  
+    print("--- INITIAL VALUES ---")
+    print(f"x: {x}")
+    print(f"y: {y}")
+    print(f"z: {z}")
+    print("\\n--- ARITHMETIC TESTS ---")
+
+    # Test addition
+    print(f"x + y: {x + y}")
+
+    # Test subtraction
+    print(f"y - x: {y - x}")
+
+    # Test scalar multiplication
+    print(f"x * 2: {x * 2}")
+
+    # Test reverse scalar multiplication
+    print(f"5 * y: {5 * y}")
+
+    # Test complex operation
+    print(f"(y - x) * 5: {(y - x) * 5}")
+
+    # Test division
+    print(f"y / 2: {y / 2}")
+
+    # Test element-wise multiplication
+    print(f"x * y: {x * y}")  
         

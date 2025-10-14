@@ -26,7 +26,6 @@ class Tank:
         self.effluent_values = Mols()
 
         self.mols = Mols()
-        self.step_completed = False
         
         self.step_completed = False # In the future, reset this on global step
 
@@ -36,28 +35,22 @@ class Tank:
         self.effluent_values = Mols() # reset to zero
 
         for fun in self.influent_functions:
-            self.influent_values += fun(self)
-            # print("Influent calc rates (mol/s):", self.influent_values)
-            print("\033[32mInfluent calc function executed\033[0m")
-
+            self.influent_values = self.influent_values + fun(self)
 
         for fun in self.effluent_functions:
-            self.effluent_values += fun(self)
-            # print("Effluent calc rates (mol/s):", self.effluent_values)
-            print("\033[32mEffluent calc function executed\033[0m")
-
-        print("Influent calc rates(mol/s):", self.influent_values)
-        print("Effluent calc rates(mol/s):", self.effluent_values)
+            self.effluent_values = self.effluent_values + fun(self)
+            print("Effluent values after", fun.__name__, ":", self.effluent_values)
+            
+                
         
     def update_mols(self):
-        self.mols += self.influent_values * self.system.dt
-        self.mols -= self.effluent_values * self.system.dt
+        print("System dt:", self.system.dt)
+        self.mols = self.mols + ((self.influent_values - self.effluent_values) * self.system.dt)
 
 
     def update_vt_flash(self):
         """ Updates tank state using VT flash calculations. Updates mole fractions"""
-        
-        if any(x < 0 for x in list(self.mols.get_sums().values())):
+        if any(x < 0 for x in list(self.mols.values())):
                 raise ValueError("Negative mole counts in tank before VT flash.")
         
         results = vt_flash.vtflash(self.volume, self.temperature, list(self.mols.get_sums().values()))
@@ -85,7 +78,7 @@ class Tank:
             GH2=self.gas_fractions[1]*self.gas_total_molecount,
             GO2=self.gas_fractions[2]*self.gas_total_molecount
         )
-        print("VT Flash Results:", results)
+        # print("VT Flash Results:", results)
 
         
 

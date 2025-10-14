@@ -10,7 +10,7 @@ class Parameters:
 
         self.MEMBRANE_PERMEABILITY_H2 = 5.31e-14  # mol/s/m/Pa
         self.MEMBRANE_PERMEABILITY_O2 = 2.26e-14  # mol/s/m/Pa
-        self.MEMBRANE_AREA_SUPERFICIAL = 0.090 # m2
+        self.MEMBRANE_AREA_SUPERFICIAL = 90e-4 # m2
         self.MEMBRANE_THICKNESS = 200e-6  # m
 
         self.ANODE_SEPARATOR_VOLUME = 0.030 # m3
@@ -70,7 +70,7 @@ class Parameters:
     @property 
     def IPP(self):
             """Current density (A/m2) as a function of time using a Heaviside step function."""
-            if self.system.time < 10:
+            if self.system.time < 60:
                     return 0
             else:
                     return 1

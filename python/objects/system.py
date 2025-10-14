@@ -24,8 +24,8 @@ class System:
 
         self.initialize_system()
 
-        self.time = float()
-        self.dt = float()
+        self.time = 0.0
+        self.dt = 1.0
 
 
     def initialize_system(self):
@@ -40,17 +40,19 @@ class System:
             GH2 = (p.CATHODE_SEPARATOR_VOLUME - p.CATHODE_LIQUID_VOLUME_TARGET) * p.CATHODE_EXTERNAL_PRESSURE / (p.IDEAL_GAS_CONSTANT * self.cathode.temperature),
             LH2O = p.CATHODE_LIQUID_VOLUME_TARGET * p.H2O_DENSITY / p.H2O_MOLAR_MASS
         )
-
+        print("Initial anode mols:", self.anode.mols)
+        print("Initial cathode mols:", self.cathode.mols)
+        
         self.anode.update_vt_flash() # update gas/liquid fractions, pressures
         self.cathode.update_vt_flash()
 
         self.electrolyzer = Electrolyzer(self.anode, self.cathode)
 
         # Add influent and effluent functions to tanks
-        self.anode.add_influent(inlet_pump, anode_in_recycled)
-        self.anode.add_effluent(anode_valve_effluent)
-        self.cathode.add_influent(cathode_out_recycled)
-        self.cathode.add_effluent(cathode_valve_effluent)
+        # self.anode.add_influent(inlet_pump, anode_in_recycled)
+        # self.anode.add_effluent(anode_valve_effluent)
+        # self.cathode.add_influent()
+        self.cathode.add_effluent(cathode_out_recycled, cathode_valve_effluent)
         
 
     def run_simulation(self, duration, dt):
@@ -62,6 +64,7 @@ class System:
             self.step(dt)
 
     def step(self, dt):
+            self.dt = dt
             # Update electrolyzer production rate values. (Updating electrolyzer influent and effluent return values)
             self.electrolyzer.step()
 
@@ -75,25 +78,30 @@ class System:
             self.anode.update_mols()
             self.cathode.update_mols()
             
-            # print("1. Anode LH2O (mol):", self.anode.mols["LH2O"])
+
             # Apply electrolyzer generation/consumption to tanks
-            print("\033[34mElectrolyzer IPP (A/m2):\033[0m", self.electrolyzer.ipp)
-            print("\033[35mElectrolyzer counts anode (mol/s):\033[0m", self.electrolyzer.get_counts_anode())
-            print("\033[35mElectrolyzer counts cathode (mol/s):\033[0m", self.electrolyzer.get_counts_cathode())
-            self.anode.mols += self.electrolyzer.get_counts_anode() * dt
-            self.cathode.mols += self.electrolyzer.get_counts_cathode() * dt
+            
+            anode_count = self.electrolyzer.get_counts_anode() * dt
+            cathode_count = self.electrolyzer.get_counts_cathode() * dt
+
+            for key in anode_count.keys():
+                if anode_count[key] < 0 and abs(anode_count[key]) > self.anode.mols[key]:
+                    self.anode.mols[key] = 0
+                    print(f"\33[31mNot enough {key} in anode tank to satisfy electrolyzer consumption.\33[0m")
+                else: self.anode.mols[key] += anode_count[key]
+                if cathode_count[key] < 0 and abs(cathode_count[key]) > self.cathode.mols[key]:
+                    self.cathode.mols[key] = 0
+                    print(f"\33[31mNot enough {key} in cathode tank to satisfy electrolyzer consumption.\33[0m")
+                else: self.cathode.mols[key] += cathode_count[key]
 
             # Reset electrolyzer for next step
             self.electrolyzer.reset_frame()
 
             # Update tank states (Apply VT flash calculations)
 
-            # print("2. Anode LH2O (mol):", self.anode.mols["LH2O"])
             self.anode.update_vt_flash()
             self.cathode.update_vt_flash()  
 
-            # Debug prints
-            # print("3. Anode LH2O (mol):", self.anode.mols["LH2O"])
             # Iterate time
             self.time += dt
 

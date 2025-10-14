@@ -19,6 +19,7 @@ def cathode_out_recycled(cathode_tank):
     """
     result = recycled(cathode_tank)
     # print("Recycled from cathode (mol/s):", result)
+    print
     return result
 
 
@@ -55,7 +56,7 @@ def recycled(tank):
     H2_molar_flow = (H2_mass_fraction * cathode_mass_rate) / molar_masses["LH2"]
     O2_molar_flow = (O2_mass_fraction * cathode_mass_rate) / molar_masses["LO2"]
 
-    return Mols(LH2O = H2O_molar_flow,LO2 = O2_molar_flow, LH2 = H2_molar_flow)
+    return Mols(LH2O = H2O_molar_flow, LO2 = O2_molar_flow, LH2 = H2_molar_flow)
 
 def cathode_mass_rate_pump(tank):
     """md_p__cr. Compute the mass flow rate of the cathode pump. """
@@ -63,6 +64,7 @@ def cathode_mass_rate_pump(tank):
     liquid_volume_actual = tank.mols["LH2O"] * p.H2O_MOLAR_MASS / p.H2O_DENSITY  # m3
     liquid_volume_target = p.CATHODE_LIQUID_VOLUME_TARGET  # m3
     volume_error = liquid_volume_actual - liquid_volume_target  # m3
+    print(f"Cathode tank volume error: {volume_error:.6f} m3")
     
     # Only pump out when liquid level is above target (positive volume error)
     # Mass flow rate should be proportional to how much above target we are
@@ -73,21 +75,6 @@ def cathode_mass_rate_pump(tank):
     return mass_rate_actual
 
 
-if __name__ == "__main__":
-    from python.objects.system import initialize_test_tanks
-    system, atank, ctank = initialize_test_tanks()
-    
-    # To test the functions, we can call them and see the returned values
-    mol_change = cathode_out_recycled(ctank)
-    print("Molar change from cathode recycled:", mol_change)
 
-    # To apply the changes, you would do something like this:
-    ctank.add_effluent(cathode_out_recycled)
-    print("After removing recycled from cathode tank:", ctank.mols)
-    print("100 mol water = ", 100 * H2O_MOLAR_MASS / H2O_DENSITY, "m3")
-    for n in range(100):
-        ctank.mols["LH2O"] += 0.1  # Add some H2O for testing
-        ctank.step() # runs all influent and effluent functions(here only recycled effluent)
-        print("Level", ctank.mols["LH2O"])
 
         
