@@ -2,18 +2,12 @@
 import numpy as np
 from parameters import *
 
-T = SYSTEM_TEMPERATURE # Whatever tbh OBS DETTE ER LITT JUKS
-
-mols_gas = np.zeros(3) # Array to hold number of moles in anode, gas
-mols_liquid = np.zeros(3) # Array to hold number of moles in anode, liquid
-pressure = np.zeros(3) # Pressure in anode
-
 # liquid saturation
-def water_saturation_pressure():
+def water_saturation_pressure(T):
     saturation_pressure = 10**(ANTOINE_A - ANTOINE_B/(ANTOINE_C+T+KELVIN_TO_CELSIUS))*BAR_TO_PA #Saturation pressure of H2O at T (54) [Pa]
     return saturation_pressure
 
-def water_saturation_volume():
+def water_saturation_volume(T):
     SATURATION_A = 2.23
     SATURATION_B = -3.332e-3
     SATURATION_C = 6.421e-6
@@ -21,7 +15,7 @@ def water_saturation_volume():
     return specific_saturation_volume_H2O
 
 # Phi
-def phi():
+def phi(T):
     PHI_CONSTANT = 1.0012
     PHI_SCALING = -1.6e-3
     phi_exponential = np.exp(8.7*((T+KELVIN_TO_CELSIUS)/373.15))
@@ -29,11 +23,11 @@ def phi():
     return phi_liquid_saturation_H2O
 
 #Fugacity
-def fugacity():
-    f = phi()*water_saturation_pressure()
+def fugacity(T):
+    f = phi(T)*water_saturation_pressure(T)
     return f
 
-def Henry(element):
+def Henry(T, element):
     assert element in ["H2", "O2"]
     Henry_max_H2 = 7.54e4*ATM_TO_PA #Hmax
     Henry_max_O2 = 7.08e4*ATM_TO_PA
@@ -58,16 +52,19 @@ def Henry(element):
 
 
 def vtflash(V,T,n):
-    pressure[0] = water_saturation_pressure() #Ph20 = psath2o, eq 34
+    mols_gas = np.zeros(3) # Array to hold number of moles in anode, gas
+    mols_liquid = np.zeros(3) # Array to hold number of moles in anode, liquid
+    pressure = np.zeros(3) # Pressure in anode
+    pressure[0] = water_saturation_pressure(T) #Ph20 = psath2o, eq 34
     
     R = IDEAL_GAS_CONSTANT # J/mol*K
     # TODO Split up into readable chunks:
-    mols_liquid[0] = (fugacity()*V-n[0]*T*R)/(fugacity()*water_saturation_volume()-R*T)
+    mols_liquid[0] = (fugacity(T)*V-n[0]*T*R)/(fugacity(T)*water_saturation_volume(T)-R*T)
     mols_gas[0] = n[0]-mols_liquid[0]
     mols_gas[1] = n[1]
     mols_gas[2] = n[2]
 
-    Volume_liquid = mols_liquid[0]*water_saturation_volume()
+    Volume_liquid = mols_liquid[0]*water_saturation_volume(T)
     Volume_gas = V - Volume_liquid
     
     pressure[1] = mols_gas[1]*R*T/Volume_gas
@@ -76,8 +73,8 @@ def vtflash(V,T,n):
     
     total_moles_gas = sum(mols_gas)
     gas_fraction_y =mols_gas/total_moles_gas
-    mols_liquid[1] = mols_liquid[0]*(pressure[1]/Henry("H2"))
-    mols_liquid[2] = mols_liquid[0]*(pressure[2]/Henry("O2"))
+    mols_liquid[1] = mols_liquid[0]*(pressure[1]/Henry(T,"H2"))
+    mols_liquid[2] = mols_liquid[0]*(pressure[2]/Henry(T,"O2"))
     total_moles_liquid = sum(mols_liquid)
     liquid_fraction_x =mols_liquid/total_moles_liquid
     
