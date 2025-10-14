@@ -17,14 +17,12 @@ class Electrolyzer:
         self.cathode = cathode 
         self.anode_count = Mols()
         self.cathode_count = Mols()
-        self.ipp = float()
         self.step_completed = False # In the future, reset this on global step
 
 
     # Update electrolyzer state
     def step(self):
         if self.step_completed: return
-        self.set_ipp()
         self.generation()
         self.drag()
         # self.hydrogen_diffusion()
@@ -33,15 +31,6 @@ class Electrolyzer:
 
     def reset_frame(self):
         self.step_completed = False
-
-    def _set_ipp(self, ipp):
-        self.ipp = ipp
-
-    def set_ipp(self):
-        ipp = p.IPP_BASE_VALUE
-        if self.anode.system.time >= p.IPP_HEAVYSIDE_TIME:
-            ipp -= p.IPP_HEAVYSIDE_STEP
-        self._set_ipp(ipp)
         
 
     # read state:
@@ -83,7 +72,7 @@ class Electrolyzer:
             return
         stochiometric_vector = [p.STOICHIOMETRIC_MATRIX[sp]/p.ELECTROLYZER_CELL_COUNT for sp in p.STOICHIOMETRIC_MATRIX.keys()]
         electrolyzer_properties = p.ELECTROLYZER_CELL_COUNT * p.MEMBRANE_AREA_SUPERFICIAL
-        electric_properties = self.ipp * electrolyzer_properties / p.FARADAY_CONSTANT
+        electric_properties = p.IPP * electrolyzer_properties / p.FARADAY_CONSTANT
         mols = Mols()
         # TODO check if sp is liquid or gas @Fredrik/group 
         for stochiometric_coefficient, sp in zip(stochiometric_vector, ["GH2O", "GH2","GO2"]):
@@ -139,7 +128,7 @@ class Electrolyzer:
         p.DRAG_BIAS = 0.3e-1
         p.DRAG_SCALING_FACTOR = 1.34e-2
         drag_efficiency = p.DRAG_BIAS + p.DRAG_SCALING_FACTOR*self.anode.temperature 
-        drag_capacity = drag_efficiency * (p.MEMBRANE_AREA_SUPERFICIAL / p.FARADAY_CONSTANT) * self.ipp
+        drag_capacity = drag_efficiency * (p.MEMBRANE_AREA_SUPERFICIAL / p.FARADAY_CONSTANT) * p.IPP
         fractions = self.anode.liquid_fractions
         out = Mols()
         for fraction, sp in zip(fractions, ["LH2O", "LH2","LO2"]):

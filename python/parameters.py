@@ -71,9 +71,9 @@ class Parameters:
     def IPP(self):
             """Current density (A/m2) as a function of time using a Heaviside step function."""
             if self.system.time < 10:
-                    return 1
+                    return 0
             else:
-                    return 0.1
+                    return 1
 
 params = Parameters()
 
