@@ -52,28 +52,28 @@ def vtflash(V,T,n):
     mols_gas[1] = n[1]
     mols_gas[2] = n[2]
 
-    V_l = mols_liquid[0]*specific_saturation_volume_H2O
-    V_g = V - V_l
+    Volume_liquid = mols_liquid[0]*specific_saturation_volume_H2O
+    Volume_gas = V - Volume_liquid
     
-    pressure[1] = mols_gas[1]*R*T/V_g
-    pressure[2] = mols_gas[2]*R*T/V_g
-    ptot_a = sum(pressure)
+    pressure[1] = mols_gas[1]*R*T/Volume_gas
+    pressure[2] = mols_gas[2]*R*T/Volume_gas
+    total_pressure = sum(pressure)
     
-    ntot_ag = sum(mols_gas)
-    y_a =mols_gas/ntot_ag
+    gas_count = sum(mols_gas)
+    gas_fraction_y =mols_gas/gas_count
     mols_liquid[1] = mols_liquid[0]*(pressure[1]/Henry_Fraction_H2)
     mols_liquid[2] = mols_liquid[0]*(pressure[2]/Henry_Fraction_O2)
-    ntot_al = sum(mols_liquid)
-    x_a =mols_liquid/ntot_al
+    liquid_count = sum(mols_liquid)
+    liquid_fraction_x =mols_liquid/liquid_count
     
     mols_gas[1] -= mols_liquid[1]    
     mols_gas[2] -= mols_liquid[2]
-    ntot_ag = sum(mols_gas)
-    y_a = mols_gas/ntot_ag
-    ptot_a = pressure[0] + R*T/V_g*(mols_gas[1]+mols_gas[2])
-    Vspec__a_g = V_g/ntot_ag
-    Vspec__a_l = V_l/ntot_al
-    return (x_a, y_a, ntot_al, ntot_ag, Vspec__a_l, Vspec__a_g, ptot_a)
+    gas_count = sum(mols_gas)
+    gas_fraction_y = mols_gas/gas_count
+    total_pressure = pressure[0] + R*T/Volume_gas*(mols_gas[1]+mols_gas[2])
+    specific_Volume_gas = Volume_gas/gas_count
+    specific_Volume_liquid = Volume_liquid/liquid_count
+    return (liquid_fraction_x, gas_fraction_y, liquid_count, gas_count, specific_Volume_liquid, specific_Volume_gas, total_pressure)
 # "Constants" and other formula expected to be found elsewhere in code
 
 
