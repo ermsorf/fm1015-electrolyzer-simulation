@@ -79,7 +79,10 @@ class Electrolyzer:
         # TODO check if sp is liquid or gas @Fredrik/group
         for stochiometric_coefficient, sp in zip(stochiometric_vector, ["GH2O", "GH2","GO2"]):
             mols[sp] = stochiometric_coefficient*electric_properties
-        self.anode_generation(mols) # double-check sign in simulation
+        generation = Mols(GH2O = mols["GH2O"], GO2 = mols["GO2"])
+        transfer = Mols(GH2 = mols["GH2"])
+        self.anode_generation(generation) # double-check sign in simulation
+        self.anode_send_to_cathode(transfer)
 
     def water_diffusion(self):
         raise NotImplementedError("Water diffusion does not occur!")
