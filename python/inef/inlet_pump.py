@@ -2,13 +2,15 @@ from python.objects.tank import Tank
 from python.objects.mols import Mols
 from python.parameters import (
 ANODE_REFERENCE_INJECTION,
-ANODE_LIQUID_VOLUME,
-ANODE_SEPARATOR_CONTROLLER_GAIN
+ANODE_LIQUID_VOLUME_TARGET,
+ANODE_SEPARATOR_CONTROLLER_GAIN,
+H2O_DENSITY, H2O_MOLAR_MASS,
 )
 
 def inlet_pump(tank: Tank):
-    volume_difference = ANODE_LIQUID_VOLUME - tank.volume
-    inlet_flow = ANODE_REFERENCE_INJECTION + ANODE_SEPARATOR_CONTROLLER_GAIN * volume_difference
+    liquid_volume_actual = tank.mols["LH2O"] * H2O_MOLAR_MASS / H2O_DENSITY
+    volume_error = liquid_volume_actual - ANODE_LIQUID_VOLUME_TARGET
+    inlet_flow = ANODE_REFERENCE_INJECTION + ANODE_SEPARATOR_CONTROLLER_GAIN * volume_error
     
     if inlet_flow < 0:
         inlet_flow = 0  # Prevent negative flow rates

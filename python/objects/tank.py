@@ -56,6 +56,10 @@ class Tank:
 
     def update_vt_flash(self):
         """ Updates tank state using VT flash calculations. Updates mole fractions"""
+        
+        if any(x < 0 for x in list(self.mols.get_sums().values())):
+                raise ValueError("Negative mole counts in tank before VT flash.")
+        
         results = vt_flash.vtflash(self.volume, self.temperature, list(self.mols.get_sums().values()))
         (
             self.liquid_fractions,
@@ -66,6 +70,9 @@ class Tank:
             self.gas_volume,
             self.pressure
         ) = results
+
+        if any(x < 0 for x in self.liquid_fractions) or any(x < 0 for x in self.gas_fractions):
+            raise ValueError("Negative mole fractions calculated in VT flash.")
         # CHECK are these values correctly updated?:
         # (fear is, these values are added to the total somehow / not 
         # representative of a partial volume etc etc.)

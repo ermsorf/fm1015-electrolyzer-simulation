@@ -7,8 +7,8 @@ from python.objects.mols import Mols
 from python.inef import inlet_pump, anode_in_recycled, cathode_out_recycled, anode_valve_effluent, cathode_valve_effluent
 from typing import List
 from python.parameters import (
-    ANODE_SEPARATOR_VOLUME, ANODE_LIQUID_VOLUME, ANODE_EXTERNAL_PRESSURE,
-    CATHODE_SEPARATOR_VOLUME, CATHODE_LIQUID_VOLUME, CATHODE_EXTERNAL_PRESSURE,
+    ANODE_SEPARATOR_VOLUME, ANODE_LIQUID_VOLUME_TARGET, ANODE_EXTERNAL_PRESSURE,
+    CATHODE_SEPARATOR_VOLUME, CATHODE_LIQUID_VOLUME_TARGET, CATHODE_EXTERNAL_PRESSURE,
     SYSTEM_TEMPERATURE, 
     IDEAL_GAS_CONSTANT, H2O_DENSITY, H2O_MOLAR_MASS,
 )
@@ -38,15 +38,15 @@ class System:
         self.cathode = Tank(self, CATHODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE)
 
         self.anode.mols = Mols(
-            GO2 = (ANODE_SEPARATOR_VOLUME - ANODE_LIQUID_VOLUME) * ANODE_EXTERNAL_PRESSURE / (IDEAL_GAS_CONSTANT * self.anode.temperature),
-            LH2O = ANODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
+            GO2 = (ANODE_SEPARATOR_VOLUME - ANODE_LIQUID_VOLUME_TARGET) * ANODE_EXTERNAL_PRESSURE / (IDEAL_GAS_CONSTANT * self.anode.temperature),
+            LH2O = ANODE_LIQUID_VOLUME_TARGET * H2O_DENSITY / H2O_MOLAR_MASS
         )
         self.cathode.mols = Mols(
-            GH2 = (CATHODE_SEPARATOR_VOLUME - CATHODE_LIQUID_VOLUME) * CATHODE_EXTERNAL_PRESSURE / (IDEAL_GAS_CONSTANT * self.cathode.temperature),
-            LH2O = CATHODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
+            GH2 = (CATHODE_SEPARATOR_VOLUME - CATHODE_LIQUID_VOLUME_TARGET) * CATHODE_EXTERNAL_PRESSURE / (IDEAL_GAS_CONSTANT * self.cathode.temperature),
+            LH2O = CATHODE_LIQUID_VOLUME_TARGET * H2O_DENSITY / H2O_MOLAR_MASS
         )
 
-        self.anode.update_vt_flash()
+        self.anode.update_vt_flash() # update gas/liquid fractions, pressures
         self.cathode.update_vt_flash()
 
         self.electrolyzer = Electrolyzer(self.anode, self.cathode)

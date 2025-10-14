@@ -89,6 +89,7 @@ class Electrolyzer:
         for stochiometric_coefficient, sp in zip(stochiometric_vector, ["GH2O", "GH2","GO2"]):
             mols[sp] = stochiometric_coefficient*electric_properties 
         self.anode_generation(mols) # double-check sign in simulation
+        # FIXME: doesnt return anything to cathode?
         print("Electrolyzer generation (mol/s):", mols)
 
     def water_diffusion(self):
