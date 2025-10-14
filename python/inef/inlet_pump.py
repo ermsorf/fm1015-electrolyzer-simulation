@@ -10,9 +10,10 @@ def inlet_pump(tank: Tank):
     volume_difference = ANODE_LIQUID_VOLUME - tank.volume
     inlet_flow = ANODE_REFERENCE_INJECTION + ANODE_SEPARATOR_CONTROLLER_GAIN * volume_difference
     
-    print("Inlet flow (mol/s):", inlet_flow)
     if inlet_flow < 0:
         inlet_flow = 0  # Prevent negative flow rates
+
+    # print("Inlet flow (mol/s):", Mols(LH2O=inlet_flow))
     return Mols(LH2O=inlet_flow) 
 
     

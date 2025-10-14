@@ -37,9 +37,17 @@ class Tank:
 
         for fun in self.influent_functions:
             self.influent_values += fun(self)
+            # print("Influent calc rates (mol/s):", self.influent_values)
+            print("\033[32mInfluent calc function executed\033[0m")
+
 
         for fun in self.effluent_functions:
             self.effluent_values += fun(self)
+            # print("Effluent calc rates (mol/s):", self.effluent_values)
+            print("\033[32mEffluent calc function executed\033[0m")
+
+        print("Influent calc rates(mol/s):", self.influent_values)
+        print("Effluent calc rates(mol/s):", self.effluent_values)
         
     def update_mols(self):
         self.mols += self.influent_values * self.system.dt
@@ -70,6 +78,7 @@ class Tank:
             GH2=self.gas_fractions[1]*self.gas_total_molecount,
             GO2=self.gas_fractions[2]*self.gas_total_molecount
         )
+        print("VT Flash Results:", results)
 
         
 

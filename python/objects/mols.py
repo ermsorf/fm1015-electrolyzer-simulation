@@ -54,12 +54,15 @@ class Mols():
         # Handle Mols / Mols
         return operate(truediv, self, other)
     def __str__(self):
-        return (f' - LH2O: {self.species["LH2O"]}\n'
-               +f' - LH2: {self.species["LH2"]}\n'
-               +f' - LO2: {self.species["LO2"]}\n'
-               +f' - GH2O: {self.species["GH2O"]}\n'
-               +f' - GH2: {self.species["GH2"]}\n'
-               +f' - GO2: {self.species["GO2"]}\n')
+        return (
+            f'LH2O: {self.species["LH2O"]}, '
+            f'LH2: {self.species["LH2"]}, '
+            f'LO2: {self.species["LO2"]}, '
+            f'GH2O: {self.species["GH2O"]}, '
+            f'GH2: {self.species["GH2"]}, '
+            f'GO2: {self.species["GO2"]}'
+        )
+
     # dict lookups
     @staticmethod
     def keys():

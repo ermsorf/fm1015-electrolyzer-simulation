@@ -81,14 +81,15 @@ class Electrolyzer:
         if self.step_completed:
             warn("Called electrolyzer twice")
             return
-        
-        electric_properties = self.ipp * ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL / FARADAY_CONSTANT
         stochiometric_vector = [STOICHIOMETRIC_MATRIX[sp]/ELECTROLYZER_CELL_COUNT for sp in STOICHIOMETRIC_MATRIX.keys()]
+        electrolyzer_properties = ELECTROLYZER_CELL_COUNT * MEMBRANE_AREA_SUPERFICIAL
+        electric_properties = self.ipp * electrolyzer_properties / FARADAY_CONSTANT
         mols = Mols()
         # TODO check if sp is liquid or gas @Fredrik/group 
         for stochiometric_coefficient, sp in zip(stochiometric_vector, ["GH2O", "GH2","GO2"]):
             mols[sp] = stochiometric_coefficient*electric_properties 
         self.anode_generation(mols) # double-check sign in simulation
+        print("Electrolyzer generation (mol/s):", mols)
 
     def water_diffusion(self):
         raise NotImplementedError("Water diffusion does not occur!")
@@ -109,6 +110,7 @@ class Electrolyzer:
         diffusion = membrane_constant*delta_p
         mols = Mols(GH2 = diffusion)
         self.cathode_send_to_anode(mols)
+        print("Diffusion H2 (mol/s):", mols)
 
     def oxygen_diffusion(self):
         if self.step_completed:
@@ -126,6 +128,7 @@ class Electrolyzer:
         diffusion = membrane_constant*delta_p
         mols = Mols(GO2 = diffusion)
         self.anode_send_to_cathode(mols)
+        print("Diffusion O2 (mol/s):", mols)
 
     # TODO double check the formula
     def drag(self):
@@ -141,6 +144,7 @@ class Electrolyzer:
         for fraction, sp in zip(fractions, ["LH2O", "LH2","LO2"]):
             out[sp] = fraction*drag_capacity*ELECTROLYZER_CELL_COUNT
         self.anode_send_to_cathode(out) # TODO Check flow directions 
+        print("Drag (mol/s):", out)
 
 if __name__ == "__main__":
     from objects.tank import Tank

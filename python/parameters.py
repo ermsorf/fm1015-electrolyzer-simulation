@@ -29,8 +29,8 @@ VALVE_CAPACITY_ANODE_EFFLUENT = None # Find in problem 7
 VALVE_CAPACITY_CATHODE_EFFLUENT = None # Find in problem 8
 
 # Heavyside-function state changes
-IPP_BASE_VALUE = 2e-4 # A/m2
-IPP_HEAVYSIDE_TIME = 5*60 # S
+IPP_BASE_VALUE = 2e-1 # A/m2
+IPP_HEAVYSIDE_TIME = 3 # 5*60 # S
 IPP_HEAVYSIDE_STEP = -0.5e-5 #A/m2
 
 # CONSTANTS

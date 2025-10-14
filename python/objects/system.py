@@ -45,6 +45,7 @@ class System:
             GH2 = (CATHODE_SEPARATOR_VOLUME - CATHODE_LIQUID_VOLUME) * CATHODE_EXTERNAL_PRESSURE / (IDEAL_GAS_CONSTANT * self.cathode.temperature),
             LH2O = CATHODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
         )
+
         self.anode.update_vt_flash()
         self.cathode.update_vt_flash()
 
@@ -70,7 +71,9 @@ class System:
             self.electrolyzer.step()
 
             # Update tank states (Apply influent and effluent functions)
+            print("Anode calc")
             self.anode.calc_rates()
+            print("Cathode calc")
             self.cathode.calc_rates()
             # NOTE: order of operations here matters, so step in system not in tank. 
             # First calculate rates, then update mols.
@@ -79,7 +82,11 @@ class System:
             self.anode.update_mols()
             self.cathode.update_mols()
             
+            # print("1. Anode LH2O (mol):", self.anode.mols["LH2O"])
             # Apply electrolyzer generation/consumption to tanks
+            print("\033[34mElectrolyzer IPP (A/m2):\033[0m", self.electrolyzer.ipp)
+            print("\033[35mElectrolyzer counts anode (mol/s):\033[0m", self.electrolyzer.get_counts_anode())
+            print("\033[35mElectrolyzer counts cathode (mol/s):\033[0m", self.electrolyzer.get_counts_cathode())
             self.anode.mols += self.electrolyzer.get_counts_anode() * dt
             self.cathode.mols += self.electrolyzer.get_counts_cathode() * dt
 
@@ -87,9 +94,13 @@ class System:
             self.electrolyzer.reset_frame()
 
             # Update tank states (Apply VT flash calculations)
+
+            # print("2. Anode LH2O (mol):", self.anode.mols["LH2O"])
             self.anode.update_vt_flash()
             self.cathode.update_vt_flash()  
 
+            # Debug prints
+            # print("3. Anode LH2O (mol):", self.anode.mols["LH2O"])
             # Iterate time
             self.time += dt
 
