@@ -92,6 +92,15 @@ def vtflash(V,T,n):
 
 
 if __name__ == '__main__':
+    """ Expected values
+    xa ≈ 0.999984, 0, 1.5588 · 10−5
+    ya = (0.16589, 0, 0.83411)
+    naℓ ≈ 555.87 mol
+    nag ≈ 0.85569 mol
+    V aℓ ≈ 1.8326 · 10−5 m3/mol
+    V ag ≈ 0.02315 m3/mol
+    pa ≈ 1.19732 · 105 Pa.
+    """
     T_a = SYSTEM_TEMPERATURE # Anode temperature, [K]
     V_a = ANODE_SEPARATOR_VOLUME # Anode volume, [M^3]
     n_a = [556, 0, 0.7224] # Total number of moles (H2O, H2, O2) in anode tank 
@@ -113,12 +122,3 @@ if __name__ == '__main__':
             assert a == t, "value changed"
     print("Success!")
     
-""" Expected values
-xa ≈ 0.999984, 0, 1.5588 · 10−5
-ya = (0.16589, 0, 0.83411)
-naℓ ≈ 555.87 mol
-nag ≈ 0.85569 mol
-V aℓ ≈ 1.8326 · 10−5 m3/mol
-V ag ≈ 0.02315 m3/mol
-pa ≈ 1.19732 · 105 Pa.
-"""
