@@ -2,11 +2,11 @@ from python.objects import *
 from python.parameters import *
 from python.inef import inlet_pump, anode_in_recycled, cathode_out_recycled, anode_valve_effluent, cathode_valve_effluent
 import matplotlib.pyplot as plt
-
+from python.parameters import params as p
 ## Initialize the system
 
 system = System()
-
+p.add_system(system)
 # Track anode mols over time
 time_history = []
 anode_mols_history = {key: [] for key in Mols.keys()}

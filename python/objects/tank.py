@@ -1,7 +1,7 @@
 # run in home folder if running tests 
 if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd())
 from typing import TYPE_CHECKING, Callable
-from python.parameters import *
+from python.parameters import params as p
 from python.objects.mols import Mols
 from python import vt_flash
 

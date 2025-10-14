@@ -6,12 +6,7 @@ from python.objects.tank import Tank
 from python.objects.mols import Mols
 from python.inef import inlet_pump, anode_in_recycled, cathode_out_recycled, anode_valve_effluent, cathode_valve_effluent
 from typing import List
-from python.parameters import (
-    ANODE_SEPARATOR_VOLUME, ANODE_LIQUID_VOLUME_TARGET, ANODE_EXTERNAL_PRESSURE,
-    CATHODE_SEPARATOR_VOLUME, CATHODE_LIQUID_VOLUME_TARGET, CATHODE_EXTERNAL_PRESSURE,
-    SYSTEM_TEMPERATURE, 
-    IDEAL_GAS_CONSTANT, H2O_DENSITY, H2O_MOLAR_MASS,
-)
+from python.parameters import params as p
 
 def placeholder(number): ...
 
@@ -34,16 +29,16 @@ class System:
 
 
     def initialize_system(self):
-        self.anode = Tank(self, ANODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE)
-        self.cathode = Tank(self, CATHODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE)
+        self.anode = Tank(self, p.ANODE_SEPARATOR_VOLUME, p.SYSTEM_TEMPERATURE)
+        self.cathode = Tank(self, p.CATHODE_SEPARATOR_VOLUME, p.SYSTEM_TEMPERATURE)
 
         self.anode.mols = Mols(
-            GO2 = (ANODE_SEPARATOR_VOLUME - ANODE_LIQUID_VOLUME_TARGET) * ANODE_EXTERNAL_PRESSURE / (IDEAL_GAS_CONSTANT * self.anode.temperature),
-            LH2O = ANODE_LIQUID_VOLUME_TARGET * H2O_DENSITY / H2O_MOLAR_MASS
+            GO2 = (p.ANODE_SEPARATOR_VOLUME - p.ANODE_LIQUID_VOLUME_TARGET) * p.ANODE_EXTERNAL_PRESSURE / (p.IDEAL_GAS_CONSTANT * self.anode.temperature),
+            LH2O = p.ANODE_LIQUID_VOLUME_TARGET * p.H2O_DENSITY / p.H2O_MOLAR_MASS
         )
         self.cathode.mols = Mols(
-            GH2 = (CATHODE_SEPARATOR_VOLUME - CATHODE_LIQUID_VOLUME_TARGET) * CATHODE_EXTERNAL_PRESSURE / (IDEAL_GAS_CONSTANT * self.cathode.temperature),
-            LH2O = CATHODE_LIQUID_VOLUME_TARGET * H2O_DENSITY / H2O_MOLAR_MASS
+            GH2 = (p.CATHODE_SEPARATOR_VOLUME - p.CATHODE_LIQUID_VOLUME_TARGET) * p.CATHODE_EXTERNAL_PRESSURE / (p.IDEAL_GAS_CONSTANT * self.cathode.temperature),
+            LH2O = p.CATHODE_LIQUID_VOLUME_TARGET * p.H2O_DENSITY / p.H2O_MOLAR_MASS
         )
 
         self.anode.update_vt_flash() # update gas/liquid fractions, pressures
@@ -71,9 +66,7 @@ class System:
             self.electrolyzer.step()
 
             # Update tank states (Apply influent and effluent functions)
-            print("Anode calc")
             self.anode.calc_rates()
-            print("Cathode calc")
             self.cathode.calc_rates()
             # NOTE: order of operations here matters, so step in system not in tank. 
             # First calculate rates, then update mols.
