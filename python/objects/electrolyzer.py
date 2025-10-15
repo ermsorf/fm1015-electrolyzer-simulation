@@ -19,14 +19,19 @@ class Electrolyzer:
         self.cathode_count = Mols()
         self.step_completed = False # In the future, reset this on global step
 
+        self.functions = [
+            self.generation, 
+            self.drag, 
+            self.hydrogen_diffusion, 
+            self.oxygen_diffusion
+            ]
+
 
     # Update electrolyzer state
     def step(self):
         if self.step_completed: return
-        self.generation()
-        self.drag()
-        self.hydrogen_diffusion()
-        self.oxygen_diffusion()
+        for fun in self.functions:
+            fun()
         self.step_completed = True
 
     def reset_frame(self):
