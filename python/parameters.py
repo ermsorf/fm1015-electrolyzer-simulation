@@ -23,6 +23,7 @@ class Parameters:
         # self.CATHODE_LIQUID_VOLUME_TARGET = self.CATHODE_SEPARATOR_VOLUME / 3 # m3
         self.CATHODE_SEPARATOR_CONTROLLER_GAIN = 20 # -
         self.CATHODE_EXTERNAL_PRESSURE = 25e5
+        self.REFERENCE_MASS_EJECTION = 5.1e-3  # kg/s
 
         self.ELECTROLYZER_CELL_COUNT = 34
 

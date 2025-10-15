@@ -68,8 +68,9 @@ def cathode_mass_rate_pump(tank):
     
     # Only pump out when liquid level is above target (positive volume error)
     # Mass flow rate should be proportional to how much above target we are
+    
     if volume_error > 0:
-        mass_rate_actual = p.CATHODE_SEPARATOR_CONTROLLER_GAIN * volume_error * p.H2O_DENSITY  # kg/s
+        mass_rate_actual = p.REFERENCE_MASS_EJECTION * p.CATHODE_SEPARATOR_CONTROLLER_GAIN * volume_error * p.H2O_DENSITY  # kg/s
     else:
         mass_rate_actual = 0  # No pumping when below or at target
     return mass_rate_actual
