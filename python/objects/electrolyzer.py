@@ -79,9 +79,9 @@ class Electrolyzer:
         # TODO check if sp is liquid or gas @Fredrik/group 
         for stochiometric_coefficient, sp in zip(stochiometric_vector, ["LH2O", "GH2","GO2"]):
             mols[sp] = stochiometric_coefficient*electric_properties
-        generation = Mols(LH2O = mols["LH2O"], GO2 = mols["GO2"])
+        # Logic: Generate all elements in anode --> send H2 component to cathode
+        self.anode_generation(mols) # double-check sign in simulation
         transfer = Mols(GH2 = mols["GH2"])
-        self.anode_generation(generation) # double-check sign in simulation
         self.anode_send_to_cathode(transfer)
 
     def water_diffusion(self):
