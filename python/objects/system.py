@@ -40,22 +40,20 @@ class System:
             GH2 = (p.CATHODE_SEPARATOR_VOLUME - p.CATHODE_LIQUID_VOLUME_TARGET) * p.CATHODE_EXTERNAL_PRESSURE / (p.IDEAL_GAS_CONSTANT * self.cathode.temperature),
             LH2O = p.CATHODE_LIQUID_VOLUME_TARGET * p.H2O_DENSITY / p.H2O_MOLAR_MASS
         )
-        print("Initial anode mols:", self.anode.mols)
-        print("Initial cathode mols:", self.cathode.mols)
-        
+
         self.anode.update_vt_flash() # update gas/liquid fractions, pressures
         self.cathode.update_vt_flash()
 
         self.electrolyzer = Electrolyzer(self.anode, self.cathode)
 
         # Add influent and effluent functions to tanks
-        # self.anode.add_influent(inlet_pump)
-        # self.anode.add_influent(anode_in_recycled)
-        # self.anode.add_effluent(anode_valve_effluent)
+        self.anode.add_influent(inlet_pump)
+        self.anode.add_influent(anode_in_recycled)
+        self.anode.add_effluent(anode_valve_effluent)
 
-        # self.cathode.add_influent()
-        # self.cathode.add_effluent(cathode_valve_effluent)
-        # self.cathode.add_effluent(cathode_out_recycled)
+        #self.cathode.add_influent()
+        self.cathode.add_effluent(cathode_valve_effluent)
+        self.cathode.add_effluent(cathode_out_recycled)
         
 
     def run_simulation(self, duration, dt):
@@ -63,7 +61,7 @@ class System:
         self.dt = dt
         steps = int(duration/dt)
 
-        for step in range(steps):
+        for _ in range(steps):
             self.step(dt)
 
     def step(self, dt):

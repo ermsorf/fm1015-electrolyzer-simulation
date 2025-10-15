@@ -64,7 +64,7 @@ def cathode_mass_rate_pump(tank):
     liquid_volume_actual = tank.mols["LH2O"] * p.H2O_MOLAR_MASS / p.H2O_DENSITY  # m3
     liquid_volume_target = p.CATHODE_LIQUID_VOLUME_TARGET  # m3
     volume_error = liquid_volume_actual - liquid_volume_target  # m3
-    print(f"Cathode tank volume error: {volume_error:.6f} m3")
+    #print(f"Cathode tank volume error: {volume_error:.6f} m3")
     
     # Only pump out when liquid level is above target (positive volume error)
     # Mass flow rate should be proportional to how much above target we are

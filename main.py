@@ -4,6 +4,7 @@ from python.parameters import *
 import matplotlib.pyplot as plt
 from python.parameters import params as p
 ## Initialize the system
+import numpy as np
 
 system = System()
 p.add_system(system)
@@ -19,8 +20,8 @@ custom_property_history = {
     "IPP": [],
 }  # Track any custom property
 
-duration = 60*20
-dt = 1
+duration = 60*40
+dt = 0.1
 steps = int(duration/dt)
 
 for step in range(steps):
@@ -46,6 +47,30 @@ Electrolyzer functions
 
 generation
 
+diffusion
+
+drag
+
+
+"""
+
+# normalize plot results to be scaled between [0,1]
+"""
+mols_history_anode = mols_history["anode"]
+for key in mols_history_anode.keys():
+    maxval = max(mols_history_anode[key])
+    minval = min(mols_history_anode[key])
+    for j in range(len(mols_history_anode[key])):
+        mols_history_anode[key][j] -= minval
+        mols_history_anode[key][j] /= (maxval-minval)
+
+mols_history_cathode = mols_history["cathode"]
+for key in mols_history_cathode.keys():
+    maxval = max(mols_history_cathode[key])
+    minval = min(mols_history_cathode[key])
+    for j in range(len(mols_history_cathode[key])):
+        mols_history_cathode[key][j] -= minval
+        mols_history_cathode[key][j] /= (maxval-minval)
 """
 
 # Plot results
@@ -54,12 +79,16 @@ fig.suptitle('Electrolyzer State Over Time', fontsize=16)
 
 # Plot liquid species
 axes[0, 0].plot(time_history, mols_history["anode"]["LH2O"], label="LH2O", linewidth=2)
+axes[0, 0].plot(time_history, mols_history["anode"]["LH2"], label="LH2", linewidth=2)
+axes[0, 0].plot(time_history, mols_history["anode"]["LO2"], label="LO2", linewidth=2)
 axes[0, 0].set_ylabel("Moles (mol)")
 axes[0, 0].set_title("Anode Liquid Species")
 axes[0, 0].legend()
 axes[0, 0].grid(True)
 
 axes[0, 1].plot(time_history, mols_history["cathode"]["LH2O"], label="LH2O", linewidth=2)
+axes[0, 1].plot(time_history, mols_history["cathode"]["LH2"], label="LH2", linewidth=2)
+axes[0, 1].plot(time_history, mols_history["cathode"]["LO2"], label="LO2", linewidth=2)
 axes[0, 1].set_ylabel("Moles (mol)")
 axes[0, 1].set_title("Cathode Liquid Species")
 axes[0, 1].legend()

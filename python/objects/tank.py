@@ -45,7 +45,6 @@ class Tank:
 
         for fun in self.effluent_functions:
             self.effluent_values = self.effluent_values + fun(self)
-            print("Effluent values after", fun.__name__, ":", self.effluent_values)
             
                 
         
