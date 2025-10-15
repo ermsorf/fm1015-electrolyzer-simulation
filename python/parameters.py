@@ -70,10 +70,10 @@ class Parameters:
     @property 
     def IPP(self):
             """Current density (A/m2) as a function of time using a Heaviside step function."""
-            if self.system.time < 60:
-                    return 0
+            if self.system.time < 60*10:
+                    return 1000
             else:
-                    return 1
+                    return 0
 
 params = Parameters()
 
