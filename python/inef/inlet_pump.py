@@ -4,7 +4,7 @@ from python.parameters import params as p
 
 def inlet_pump(tank: Tank):
     liquid_volume_actual = tank.mols["LH2O"] * p.H2O_MOLAR_MASS / p.H2O_DENSITY
-    volume_error = liquid_volume_actual - p.ANODE_LIQUID_VOLUME_TARGET
+    volume_error = p.ANODE_LIQUID_VOLUME_TARGET - liquid_volume_actual
     inlet_flow = p.ANODE_REFERENCE_INJECTION + p.ANODE_SEPARATOR_CONTROLLER_GAIN * volume_error
     
     if inlet_flow < 0:
