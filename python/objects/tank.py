@@ -1,6 +1,7 @@
 # run in home folder if running tests 
 if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd())
 from typing import TYPE_CHECKING, Callable
+from warnings import warn
 from python.parameters import params as p
 from python.objects.mols import Mols
 from python import vt_flash
@@ -30,6 +31,11 @@ class Tank:
         self.step_completed = False # In the future, reset this on global step
 
 
+    def reset_frame(self):
+        self.influent_values = Mols()
+        self.effluent_values = Mols()
+        self.step_completed = False
+
     def calc_rates(self):
         self.influent_values = Mols() # reset to zero
         self.effluent_values = Mols() # reset to zero
@@ -44,9 +50,9 @@ class Tank:
                 
         
     def update_mols(self):
-        print("System dt:", self.system.dt)
+        if self.step_completed: warn("Tried to update mols twice in step"); return
         self.mols = self.mols + ((self.influent_values - self.effluent_values) * self.system.dt)
-
+        self.step_completed = True
 
     def update_vt_flash(self):
         """ Updates tank state using VT flash calculations. Updates mole fractions"""

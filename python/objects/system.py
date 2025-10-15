@@ -49,10 +49,13 @@ class System:
         self.electrolyzer = Electrolyzer(self.anode, self.cathode)
 
         # Add influent and effluent functions to tanks
-        # self.anode.add_influent(inlet_pump, anode_in_recycled)
+        # self.anode.add_influent(inlet_pump)
+        # self.anode.add_influent(anode_in_recycled)
         # self.anode.add_effluent(anode_valve_effluent)
+
         # self.cathode.add_influent()
-        self.cathode.add_effluent(cathode_out_recycled, cathode_valve_effluent)
+        # self.cathode.add_effluent(cathode_valve_effluent)
+        # self.cathode.add_effluent(cathode_out_recycled)
         
 
     def run_simulation(self, duration, dt):
@@ -94,13 +97,14 @@ class System:
                     print(f"\33[31mNot enough {key} in cathode tank to satisfy electrolyzer consumption.\33[0m")
                 else: self.cathode.mols[key] += cathode_count[key]
 
-            # Reset electrolyzer for next step
-            self.electrolyzer.reset_frame()
-
             # Update tank states (Apply VT flash calculations)
-
             self.anode.update_vt_flash()
             self.cathode.update_vt_flash()  
+            
+            # Reset electrolyzer for next step
+            self.electrolyzer.reset_frame()
+            self.anode.reset_frame()
+            self.cathode.reset_frame()
 
             # Iterate time
             self.time += dt
