@@ -98,8 +98,8 @@ class System:
                 else: self.cathode.mols[key] += cathode_count[key]
 
             # Update tank states (Apply VT flash calculations)
-            self.anode.update_vt_flash()
-            self.cathode.update_vt_flash()  
+            #self.anode.update_vt_flash()
+            #self.cathode.update_vt_flash()  
             
             # Reset electrolyzer for next step
             self.electrolyzer.reset_frame()

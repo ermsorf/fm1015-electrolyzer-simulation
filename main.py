@@ -19,7 +19,7 @@ custom_property_history = {
     "IPP": [],
 }  # Track any custom property
 
-duration = 60*20
+duration = 60*40
 dt = 1
 steps = int(duration/dt)
 
@@ -54,12 +54,16 @@ fig.suptitle('Electrolyzer State Over Time', fontsize=16)
 
 # Plot liquid species
 axes[0, 0].plot(time_history, mols_history["anode"]["LH2O"], label="LH2O", linewidth=2)
+axes[0, 0].plot(time_history, mols_history["anode"]["LH2"], label="LH2", linewidth=2)
+axes[0, 0].plot(time_history, mols_history["anode"]["LO2"], label="LO2", linewidth=2)
 axes[0, 0].set_ylabel("Moles (mol)")
 axes[0, 0].set_title("Anode Liquid Species")
 axes[0, 0].legend()
 axes[0, 0].grid(True)
 
 axes[0, 1].plot(time_history, mols_history["cathode"]["LH2O"], label="LH2O", linewidth=2)
+axes[0, 1].plot(time_history, mols_history["cathode"]["LH2"], label="LH2", linewidth=2)
+axes[0, 1].plot(time_history, mols_history["cathode"]["LO2"], label="LO2", linewidth=2)
 axes[0, 1].set_ylabel("Moles (mol)")
 axes[0, 1].set_title("Cathode Liquid Species")
 axes[0, 1].legend()
