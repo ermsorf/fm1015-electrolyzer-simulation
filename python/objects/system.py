@@ -33,12 +33,12 @@ class System:
         self.cathode = Tank(self, p.CATHODE_SEPARATOR_VOLUME, p.SYSTEM_TEMPERATURE)
 
         self.anode.mols = Mols(
-            GO2 = (p.ANODE_SEPARATOR_VOLUME - p.ANODE_LIQUID_VOLUME_TARGET) * p.ANODE_EXTERNAL_PRESSURE / (p.IDEAL_GAS_CONSTANT * self.anode.temperature),
-            LH2O = p.ANODE_LIQUID_VOLUME_TARGET * p.H2O_DENSITY / p.H2O_MOLAR_MASS
+            GO2 = 0.7221,
+            LH2O = 550
         )
         self.cathode.mols = Mols(
-            GH2 = (p.CATHODE_SEPARATOR_VOLUME - p.CATHODE_LIQUID_VOLUME_TARGET) * p.CATHODE_EXTERNAL_PRESSURE / (p.IDEAL_GAS_CONSTANT * self.cathode.temperature),
-            LH2O = p.CATHODE_LIQUID_VOLUME_TARGET * p.H2O_DENSITY / p.H2O_MOLAR_MASS
+            GH2 = 3.5863,
+            LH2O = 91.67
         )
 
         self.anode.update_vt_flash() # update gas/liquid fractions, pressures
