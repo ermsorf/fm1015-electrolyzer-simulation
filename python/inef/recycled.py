@@ -10,6 +10,7 @@ def anode_in_recycled(anode_tank):
     cathode_tank = anode_tank.system.cathode
     result = recycled(cathode_tank)
     # print("Recycled to anode (mol/s):", result)
+    anode_tank.track_recycled.append(result)
     return result
 
 def cathode_out_recycled(cathode_tank):

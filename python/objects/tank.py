@@ -14,11 +14,11 @@ def bar_to_Pa(p_bar):
 
 class Tank:
     system: 'System'
-    def __init__(self, system, volume, temperature):
+    def __init__(self, system, volume):
         self.system = system
 
         self.volume = volume  # m3
-        self.temperature = temperature  # K
+        # self.temperature = temperature  # K
 
         self.influent_functions = list()
         self.effluent_functions = list()
@@ -30,6 +30,11 @@ class Tank:
         
         self.step_completed = False # In the future, reset this on global step
 
+        self.track_recycled = []  # For analysis purposes
+
+    @property
+    def temperature(self):
+        return p.SYSTEM_TEMPERATURE
 
     def reset_frame(self):
         self.influent_values = Mols()

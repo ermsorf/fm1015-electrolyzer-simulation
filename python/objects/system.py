@@ -6,7 +6,7 @@ from python.objects.tank import Tank
 from python.objects.mols import Mols
 from python.inef import inlet_pump, anode_in_recycled, cathode_out_recycled, anode_valve_effluent, cathode_valve_effluent
 from typing import List
-from python.parameters import params as p
+from python.parameters import Parameters, params as p
 
 def placeholder(number): ...
 
@@ -20,17 +20,19 @@ class System:
     electrolyzer: Electrolyzer
 
 
-    def __init__(self):
-
-        self.initialize_system()
+    def __init__(self, parameters: 'Parameters' = p, time=0.0, dt=1.0):
 
         self.time = 0.0
         self.dt = 1.0
 
+        self.parameters = parameters
+        self.parameters.add_system(self)
+
+        self.initialize_system()
 
     def initialize_system(self):
-        self.anode = Tank(self, p.ANODE_SEPARATOR_VOLUME, p.SYSTEM_TEMPERATURE)
-        self.cathode = Tank(self, p.CATHODE_SEPARATOR_VOLUME, p.SYSTEM_TEMPERATURE)
+        self.anode = Tank(self, p.ANODE_SEPARATOR_VOLUME)
+        self.cathode = Tank(self, p.CATHODE_SEPARATOR_VOLUME)
 
         self.anode.mols = Mols(
             GO2 = 0.7221,

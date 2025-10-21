@@ -6,7 +6,7 @@ class Parameters:
         self.system = system
 
     def __init__(self):
-        self.SYSTEM_TEMPERATURE = 273.15 + 60
+        # self.SYSTEM_TEMPERATURE = 273.15 + 60
 
         self.MEMBRANE_PERMEABILITY_H2 = 5.31e-14  # mol/s/m/Pa
         self.MEMBRANE_PERMEABILITY_O2 = 2.26e-14  # mol/s/m/Pa
@@ -21,8 +21,8 @@ class Parameters:
 
         self.CATHODE_SEPARATOR_VOLUME = 0.005 # m3
         # self.CATHODE_LIQUID_VOLUME_TARGET = self.CATHODE_SEPARATOR_VOLUME / 3 # m3
-        self.CATHODE_SEPARATOR_CONTROLLER_GAIN = 20 # -
-        self.CATHODE_EXTERNAL_PRESSURE = 25e5
+        self.CATHODE_SEPARATOR_CONTROLLER_GAIN = 20 # - 
+        # self.CATHODE_EXTERNAL_PRESSURE = 25e5
         self.REFERENCE_MASS_EJECTION = 5.1e-3  # kg/s
 
         self.ELECTROLYZER_CELL_COUNT = 34
@@ -37,7 +37,7 @@ class Parameters:
 
         # Heavyside-function state changes
         self.IPP_BASE_VALUE = 2e-1 # A/m2
-        self.IPP_HEAVYSIDE_TIME = 2 # 5*60 # S
+        self.IPP_HEAVYSIDE_TIME = 2 # 5*60 # s
         self.IPP_HEAVYSIDE_STEP = -0.5e-1 #A/m2
 
         # CONSTANTS
@@ -51,7 +51,7 @@ class Parameters:
         self.H2_MOLAR_MASS = 2e-3  # kg/mol
         self.O2_MOLAR_MASS = 32e-3  # kg/mol
 
-        self.ANTOINE_A = 5.11564 # K
+        self.ANTOINE_A = 5.11564 # -
         self.ANTOINE_B = 1687.537 # K
         self.ANTOINE_C = 230.17 # K
 
@@ -59,6 +59,22 @@ class Parameters:
         self.MAX_TANK_PRESSURE = 16e5 # Pa
         self.MIN_TANK_TEMPERATURE = 273.2 # K
         self.MAX_TANK_TEMPERATURE = 473.2 # K
+
+    @property
+    def SYSTEM_TEMPERATURE(self):
+          return 273.15 + 60
+          if self.system.time < 60*15:
+                return 273.15 + 60
+          else:
+                return 273.15 + 65
+    
+    @property
+    def CATHODE_EXTERNAL_PRESSURE(self):
+            return 25e5
+            if self.system.time < 60*10:
+                return 25e5
+            else:
+                return 24.5e5
     
     @property
     def ANODE_LIQUID_VOLUME_TARGET(self):
@@ -70,12 +86,11 @@ class Parameters:
 
     @property 
     def IPP(self):
-            """Current density (A/m2) as a function of time using a Heaviside step function."""
-            if self.system.time < 60*10:
-                    return 000
-            elif self.system.time < 60*25:
-                    return 1000
+            return 1000
+            if self.system.time < 60*5:
+                return 0
             else:
-                    return 0
+                return 1000
+    
 
 params = Parameters()

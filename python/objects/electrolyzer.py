@@ -25,6 +25,10 @@ class Electrolyzer:
             self.hydrogen_diffusion, 
             self.oxygen_diffusion
             ]
+        
+        self.track_hydrogen_diffusion = []  # For analysis purposes
+        self.track_oxygen_diffusion = []
+        self.track_drag = []
 
 
     # Update electrolyzer state
@@ -92,7 +96,7 @@ class Electrolyzer:
     def water_diffusion(self):
         raise NotImplementedError("Water diffusion does not occur!")
 
-    def hydrogen_diffusion(self):
+    def hydrogen_diffusion(self, track=False):
         if self.step_completed:
             warn("Called electrolyzer twice")
             return
@@ -108,6 +112,8 @@ class Electrolyzer:
         diffusion = membrane_constant*delta_p
         mols = Mols(GH2 = diffusion)
         self.cathode_send_to_anode(mols)
+        # Track diffusion for analysis, REMOVE LATER
+        self.track_hydrogen_diffusion.append(mols)
 
     def oxygen_diffusion(self):
         if self.step_completed:
@@ -125,6 +131,8 @@ class Electrolyzer:
         diffusion = membrane_constant*delta_p
         mols = Mols(GO2 = diffusion)
         self.anode_send_to_cathode(mols)
+        # Track diffusion for analysis, REMOVE LATER
+        self.track_oxygen_diffusion.append(mols)
 
     # TODO double check the formula
     def drag(self):
@@ -140,6 +148,8 @@ class Electrolyzer:
         for fraction, sp in zip(fractions, ["LH2O", "LH2","LO2"]):
             out[sp] = fraction*drag_capacity*p.ELECTROLYZER_CELL_COUNT
         self.anode_send_to_cathode(out) # TODO Check flow directions 
+        # Track drag for analysis, REMOVE LATER
+        self.track_drag.append(out)
 
 if __name__ == "__main__":
     from objects.tank import Tank
