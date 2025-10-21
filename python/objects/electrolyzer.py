@@ -30,6 +30,9 @@ class Electrolyzer:
         self.track_oxygen_diffusion = []
         self.track_drag = []
 
+        self.track_cathode_count = []
+        self.track_anode_count = []
+
 
     # Update electrolyzer state
     def step(self):
@@ -37,6 +40,8 @@ class Electrolyzer:
         for fun in self.functions:
             fun()
         self.step_completed = True
+        self.track_cathode_count.append(self.cathode_count)
+        self.track_anode_count.append(self.anode_count)
 
     def reset_frame(self):
         self.anode_count = Mols()
@@ -139,7 +144,7 @@ class Electrolyzer:
         if self.step_completed:
             warn("Called electrolyzer twice")
             return
-        p.DRAG_BIAS = 0.3e-1
+        p.DRAG_BIAS = 0.3e-1 # 0.03
         p.DRAG_SCALING_FACTOR = 1.34e-2
         drag_efficiency = p.DRAG_BIAS + p.DRAG_SCALING_FACTOR*self.anode.temperature 
         drag_capacity = drag_efficiency * (p.MEMBRANE_AREA_SUPERFICIAL / p.FARADAY_CONSTANT) * p.IPP
