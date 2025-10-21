@@ -41,6 +41,7 @@ for step in range(steps):
         print(f"Error at step {step}, time {system.time}s: {e}")
         break
 
+
 # normalize plot results to be scaled between [0,1]
 """
 mols_history_anode = mols_history["anode"]
@@ -319,8 +320,159 @@ ax2.legend(loc='center right')
 ax2.ticklabel_format(useOffset=False, axis='y')
 ax2.grid(True)
 plt.tight_layout()
-plt.savefig(plot_save_folder + 'anode_liquid_fraction.png', dpi=600)
 plt.show()
+
+
+=======
+plt.savefig(plot_save_folder + 'anode_liquid_species.png', dpi=600)
+# plt.show()
+
+# Anode gas species plot: left axis GO2, right axis GH2 & GO2
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
+fig.suptitle('Anode Gas Species', fontsize=16)
+
+ax1.plot(time_history, mols_history["anode"]["GO2"], label="GO2", linewidth=2, color=color_o2)
+ax1.set_xlabel("Time (s)")
+ax1.set_ylabel("GO2 (mol)", color='black')
+ax1.tick_params(axis='y', labelcolor='black')
+ax1.legend(loc='lower right')
+ax1.grid(True)
+
+ax2.plot(time_history, mols_history["anode"]["GH2"], label="GH2", linewidth=1.5, color=color_h2)
+ax2.plot(time_history, mols_history["anode"]["GH2O"], label="GH2O", linewidth=1.5, color=color_h2o)
+ax2.set_xlabel("Time (s)")
+ax2.set_ylabel("GH2 / GH2O (mol)", color='black')
+# Place the right label outside and move it further right to avoid overlapping ax1
+ax2.yaxis.set_label_position('right')
+ax2.yaxis.set_label_coords(1.12, 0.5)
+ax2.tick_params(axis='y', labelcolor='black')
+ax2.legend(loc='lower right')
+ax2.grid(True)
+plt.tight_layout()
+plt.savefig(plot_save_folder + 'anode_gas_species.png', dpi=600)
+# plt.show()
+
+
+# Cathode Liquid species plot: left axis LH2O, right axis LH2 & LO2
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
+fig.suptitle('Cathode Liquid Species', fontsize=16)
+
+ax1.plot(time_history, mols_history["cathode"]["LH2O"], label="LH2O", linewidth=2, color='tab:blue')
+ax1.set_xlabel("Time (s)")
+ax1.set_ylabel("LH2O (mol)", color='black')
+ax1.tick_params(axis='y', labelcolor='black')
+ax1.legend(loc='center right')
+ax1.grid(True)
+
+ax2.plot(time_history, mols_history["cathode"]["LH2"], label="LH2", linewidth=1.5, color='tab:orange')
+ax2.plot(time_history, mols_history["cathode"]["LO2"], label="LO2", linewidth=1.5, color='tab:green')
+ax2.set_xlabel("Time (s)")
+ax2.set_ylabel("LH2 / LO2 (mol)", color='black')
+# Place the right label outside and move it further right to avoid overlapping ax1
+ax2.yaxis.set_label_position('right')
+ax2.yaxis.set_label_coords(1.12, 0.5)
+ax2.tick_params(axis='y', labelcolor='black')
+ax2.legend(loc='center right')
+ax2.grid(True)
+plt.tight_layout()
+plt.savefig(plot_save_folder + 'cathode_liquid_species.png', dpi=600)
+# plt.show()
+
+# Cathode gas species plot: left axis GO2, right axis GH2 & GO2
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
+fig.suptitle('Cathode Gas Species', fontsize=16)
+
+ax1.plot(time_history, mols_history["cathode"]["GH2"], label="GH2", linewidth=2, color=color_h2)
+ax1.set_xlabel("Time (s)")
+ax1.set_ylabel("GH2 (mol)", color='black')
+ax1.tick_params(axis='y', labelcolor='black')
+ax1.legend(loc='center right')
+ax1.grid(True)
+
+ax2.plot(time_history, mols_history["cathode"]["GO2"], label="GO2", linewidth=1.5, color=color_o2)
+ax2.plot(time_history, mols_history["cathode"]["GH2O"], label="GH2O", linewidth=1.5, color=color_h2o)
+ax2.set_xlabel("Time (s)")
+ax2.set_ylabel("GO2 / GH2O (mol)", color='black')
+# Place the right label outside and move it further right to avoid overlapping ax1
+ax2.yaxis.set_label_position('right')
+ax2.yaxis.set_label_coords(1.12, 0.5)
+ax2.tick_params(axis='y', labelcolor='black')
+ax2.legend(loc='center right')
+ax2.grid(True)
+plt.tight_layout()
+plt.savefig(plot_save_folder + 'cathode_gas_species.png', dpi=600)
+# plt.show()
+
+
+plt.figure(figsize=(8, 4))
+plt.plot(time_history, custom_property_history["Anode Pressure"], linewidth=2, color='green')
+plt.title("Anode Pressure vs Time")
+plt.xlabel("Time (s)")
+plt.ylabel("Pressure (Pa)")
+plt.grid(True)
+plt.ticklabel_format(style='sci', useOffset=False, axis='y')
+plt.savefig(plot_save_folder + 'anode_pressure.png', dpi=600)
+# plt.show()
+
+plt.figure(figsize=(8, 4))
+plt.plot(time_history, custom_property_history["Cathode Pressure"], linewidth=2, color='blue')
+plt.title("Cathode Pressure vs Time")
+plt.xlabel("Time (s)")
+plt.ylabel("Pressure (Pa)")
+plt.grid(True)
+plt.ticklabel_format(style='sci', useOffset=False, axis='y')
+plt.savefig(plot_save_folder + 'cathode_pressure.png', dpi=600)
+# plt.show()
+
+plt.figure(figsize=(8, 4))
+plt.plot(time_history, mols_history["anode"]["GH2"], label="H2", linewidth=2, color=color_h2)
+plt.title("Anode H2 vs Time")
+plt.xlabel("Time (s)")
+plt.ylabel("H2 (mol)")
+plt.grid(True)
+plt.savefig(plot_save_folder + 'anode_h2.png', dpi=600)
+# plt.show()
+
+# plt.close('all')
+
+# Liquid fractions plot
+liq_frac_anode = {
+    "LH2O": [mols_history["anode"]["LH2O"][i] / (mols_history["anode"]["LH2O"][i] + mols_history["anode"]["LH2"][i] + mols_history["anode"]["LO2"][i]) if (mols_history["anode"]["LH2O"][i] + mols_history["anode"]["LH2"][i] + mols_history["anode"]["LO2"][i]) > 0 else 0 for i in range(len(time_history))],
+    "LH2": [mols_history["anode"]["LH2"][i] / (mols_history["anode"]["LH2O"][i] + mols_history["anode"]["LH2"][i] + mols_history["anode"]["LO2"][i]) if (mols_history["anode"]["LH2O"][i] + mols_history["anode"]["LH2"][i] + mols_history["anode"]["LO2"][i]) > 0 else 0 for i in range(len(time_history))],
+    "LO2": [mols_history["anode"]["LO2"][i] / (mols_history["anode"]["LH2O"][i] + mols_history["anode"]["LH2"][i] + mols_history["anode"]["LO2"][i]) if (mols_history["anode"]["LH2O"][i] + mols_history["anode"]["LH2"][i] + mols_history["anode"]["LO2"][i]) > 0 else 0 for i in range(len(time_history))]
+}
+
+liq_frac_cathode = {
+    "LH2O": [mols_history["cathode"]["LH2O"][i] / (mols_history["cathode"]["LH2O"][i] + mols_history["cathode"]["LH2"][i] + mols_history["cathode"]["LO2"][i]) if (mols_history["cathode"]["LH2O"][i] + mols_history["cathode"]["LH2"][i] + mols_history["cathode"]["LO2"][i]) > 0 else 0 for i in range(len(time_history))],
+    "LH2": [mols_history["cathode"]["LH2"][i] / (mols_history["cathode"]["LH2O"][i] + mols_history["cathode"]["LH2"][i] + mols_history["cathode"]["LO2"][i]) if (mols_history["cathode"]["LH2O"][i] + mols_history["cathode"]["LH2"][i] + mols_history["cathode"]["LO2"][i]) > 0 else 0 for i in range(len(time_history))],
+    "LO2": [mols_history["cathode"]["LO2"][i] / (mols_history["cathode"]["LH2O"][i] + mols_history["cathode"]["LH2"][i] + mols_history["cathode"]["LO2"][i]) if (mols_history["cathode"]["LH2O"][i] + mols_history["cathode"]["LH2"][i] + mols_history["cathode"]["LO2"][i]) > 0 else 0 for i in range(len(time_history))]
+}
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
+fig.suptitle('Anode Liquid Fractions', fontsize=16)
+
+ax1.plot(time_history, liq_frac_anode["LH2O"], label="LH2O", linewidth=2, color=color_h2o)
+ax1.set_xlabel("Time (s)")
+ax1.set_ylabel("LH2O (mol)", color='black')
+ax1.tick_params(axis='y', labelcolor='black')
+ax1.legend(loc='center right')
+ax1.ticklabel_format(useOffset=False, axis='y')
+ax1.grid(True)
+
+ax2.plot(time_history, liq_frac_anode["LH2"], label="LH2", linewidth=1.5, color=color_h2)
+ax2.plot(time_history, liq_frac_anode["LO2"], label="LO2", linewidth=1.5, color=color_o2)
+ax2.set_xlabel("Time (s)")
+ax2.set_ylabel("LH2 / LO2 (mol)", color='black')
+# Place the right label outside and move it further right to avoid overlapping ax1
+ax2.yaxis.set_label_position('right')
+ax2.yaxis.set_label_coords(1.12, 0.5)
+ax2.tick_params(axis='y', labelcolor='black')
+ax2.legend(loc='center right')
+ax2.ticklabel_format(useOffset=False, axis='y')
+ax2.grid(True)
+plt.tight_layout()
+plt.savefig(plot_save_folder + 'anode_liquid_fraction.png', dpi=600)
+# plt.show()
 
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
@@ -347,32 +499,116 @@ ax2.legend(loc='center right')
 ax2.grid(True)
 plt.tight_layout()
 plt.savefig(plot_save_folder + 'cathode_liquid_fraction.png', dpi=600)
-plt.show()
+# plt.show()
+>>>>>>> Stashed changes
 
 
-anode_hydrogen_diffusion = system.electrolyzer.track_hydrogen_diffusion
-anode_hydrogen_recycled = system.anode.track_recycled
-plt.figure(figsize=(8, 4))
-plt.plot(time_history, [anode_hydrogen_diffusion[i]['GH2'] for i in range(len(time_history))], label="Diffusion", linewidth=2, color='blue')
-plt.plot(time_history, [anode_hydrogen_recycled[i]['LH2'] for i in range(len(time_history))], label="Recycled", linewidth=2, color='orange')
-plt.title("Anode Hydrogen Diffusion and Recycling vs Time")
-plt.xlabel("Time (s)")
-plt.ylabel("Moles per second (mol/s)")
-plt.grid(True)
-plt.legend(loc='center right')
-plt.savefig(plot_save_folder + 'anode_h2_diffusion_recycling.png', dpi=600)
+
+<<<<<<< Updated upstream
+=======
+
+# cathode_oxygen_diffusion = system.electrolyzer.track_oxygen_diffusion
+# cathode_oxygen_drag = system.electrolyzer.track_drag
+# plt.figure(figsize=(8, 4))
+# plt.plot(time_history, [cathode_oxygen_diffusion[i]['GO2'] for i in range(len(time_history))], label="Diffusion", linewidth=2, color='blue')
+# plt.plot(time_history, [cathode_oxygen_drag[i]['LO2'] for i in range(len(time_history))], label="Drag", linewidth=2, color='orange')
+# plt.title("Cathode Oxygen Diffusion and Drag vs Time")
+# plt.xlabel("Time (s)")
+# plt.ylabel("Moles per second (mol/s)")
+# plt.grid(True)
+# plt.legend(loc='center right')
+# plt.savefig(plot_save_folder + 'cathode_o2_diffusion_drag.png', dpi=600)
+
 # plt.show()
 
 
-cathode_oxygen_diffusion = system.electrolyzer.track_oxygen_diffusion
-cathode_oxygen_drag = system.electrolyzer.track_drag
-plt.figure(figsize=(8, 4))
-plt.plot(time_history, [cathode_oxygen_diffusion[i]['GO2'] for i in range(len(time_history))], label="Diffusion", linewidth=2, color='blue')
-plt.plot(time_history, [cathode_oxygen_drag[i]['LO2'] for i in range(len(time_history))], label="Drag", linewidth=2, color='orange')
-plt.title("Cathode Oxygen Diffusion and Drag vs Time")
-plt.xlabel("Time (s)")
-plt.ylabel("Moles per second (mol/s)")
-plt.grid(True)
-plt.legend(loc='center right')
-plt.savefig(plot_save_folder + 'cathode_o2_diffusion_drag.png', dpi=600)
+# electrolyzer_history_anode = system.electrolyzer.track_anode_count
+# electrolyzer_history_cathode = system.electrolyzer.track_cathode_count
+
+# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
+# fig.suptitle('Generation cathode L', fontsize=16)
+# ax1.plot(time_history, [electrolyzer_history_cathode[i]['GO2'] for i in range(len(time_history))], label="LH2O", linewidth=2, color='tab:blue')
+# ax1.set_xlabel("Time (s)")
+# ax1.set_ylabel("LH2O (mol)", color='black')
+# ax1.tick_params(axis='y', labelcolor='black')
+# ax1.legend(loc='center right')
+# ax1.grid(True)
+# ax2.plot(time_history, [electrolyzer_history_cathode[i]['LH2'] for i in range(len(time_history))], label="LH2", linewidth=1.5, color='tab:orange')
+# ax2.plot(time_history, [electrolyzer_history_cathode[i]['LO2'] for i in range(len(time_history))], label="LO2", linewidth=1.5, color='tab:green')
+# ax2.set_xlabel("Time (s)")
+# ax2.set_ylabel("LH2 / LO2 (mol)", color='black')
+# # Place the right label outside and move it further right to avoid overlapping ax1
+# ax2.yaxis.set_label_position('right')
+# ax2.tick_params(axis='y', labelcolor='black')
+# ax2.legend(loc='center right')
+# ax2.grid(True)
+# plt.tight_layout()
+# # plt.savefig(plot_save_folder + 'cathode_liquid_species.png', dpi=600)
+
+# plt.show()  
+
+# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
+# fig.suptitle('Generation cathode G', fontsize=16)
+# ax1.plot(time_history, [electrolyzer_history_cathode[i]['GH2'] for i in range(len(time_history))], label="GH2", linewidth=2, color='tab:blue')
+# ax1.set_xlabel("Time (s)")
+# ax1.set_ylabel("LH2O (mol)", color='black')
+# ax1.tick_params(axis='y', labelcolor='black')
+# ax1.legend(loc='center right')
+# ax1.grid(True)
+# ax2.plot(time_history, [electrolyzer_history_cathode[i]['GH2O'] for i in range(len(time_history))], label="GH2O", linewidth=1.5, color='tab:orange')
+# ax2.plot(time_history, [electrolyzer_history_cathode[i]['GO2'] for i in range(len(time_history))], label="GO2", linewidth=1.5, color='tab:green')
+# ax2.set_xlabel("Time (s)")
+# ax2.set_ylabel("GH2 / GO2 (mol)", color='black')
+# # Place the right label outside and move it further right to avoid overlapping ax1
+# ax2.yaxis.set_label_position('right')
+# ax2.tick_params(axis='y', labelcolor='black')
+# ax2.legend(loc='center right')
+# ax2.grid(True)
+# plt.tight_layout()
+# # plt.savefig(plot_save_folder + 'cathode_liquid_species.png', dpi=600)
 # plt.show()
+
+
+# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
+# fig.suptitle('Generation anode L', fontsize=16)
+# ax1.plot(time_history, [electrolyzer_history_anode[i]['GO2'] for i in range(len(time_history))], label="LH2O", linewidth=2, color='tab:blue')
+# ax1.set_xlabel("Time (s)")
+# ax1.set_ylabel("LH2O (mol)", color='black')
+# ax1.tick_params(axis='y', labelcolor='black')
+# ax1.legend(loc='center right')
+# ax1.grid(True)
+# ax2.plot(time_history, [electrolyzer_history_anode[i]['LH2'] for i in range(len(time_history))], label="LH2", linewidth=1.5, color='tab:orange')
+# ax2.plot(time_history, [electrolyzer_history_anode[i]['LO2'] for i in range(len(time_history))], label="LO2", linewidth=1.5, color='tab:green')
+# ax2.set_xlabel("Time (s)")
+# ax2.set_ylabel("LH2 / LO2 (mol)", color='black')
+# # Place the right label outside and move it further right to avoid overlapping ax1
+# ax2.yaxis.set_label_position('right')
+# ax2.tick_params(axis='y', labelcolor='black')
+# ax2.legend(loc='center right')
+# ax2.grid(True)
+# plt.tight_layout()
+# # plt.savefig(plot_save_folder + 'cathode_liquid_species.png', dpi=600)
+
+# plt.show()  
+
+# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
+# fig.suptitle('Generation anode G', fontsize=16)
+# ax1.plot(time_history, [electrolyzer_history_anode[i]['GH2'] for i in range(len(time_history))], label="GH2", linewidth=2, color='tab:blue')
+# ax1.set_xlabel("Time (s)")
+# ax1.set_ylabel("LH2O (mol)", color='black')
+# ax1.tick_params(axis='y', labelcolor='black')
+# ax1.legend(loc='center right')
+# ax1.grid(True)
+# ax2.plot(time_history, [electrolyzer_history_anode[i]['GH2O'] for i in range(len(time_history))], label="GH2O", linewidth=1.5, color='tab:orange')
+# ax2.plot(time_history, [electrolyzer_history_anode[i]['GO2'] for i in range(len(time_history))], label="GO2", linewidth=1.5, color='tab:green')
+# ax2.set_xlabel("Time (s)")
+# ax2.set_ylabel("GH2 / GO2 (mol)", color='black')
+# # Place the right label outside and move it further right to avoid overlapping ax1
+# ax2.yaxis.set_label_position('right')
+# ax2.tick_params(axis='y', labelcolor='black')
+# ax2.legend(loc='center right')
+# ax2.grid(True)
+# plt.tight_layout()
+# # plt.savefig(plot_save_folder + 'cathode_liquid_species.png', dpi=600)
+# plt.show()
+>>>>>>> Stashed changes

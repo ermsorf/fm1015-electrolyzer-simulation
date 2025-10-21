@@ -1,3 +1,4 @@
+import numpy as np
 from python.parameters import params as p
 from python.objects.mols import Mols
 from typing import Literal
@@ -19,7 +20,7 @@ def general_valve_effluent(tank: 'Tank', tank_type = Literal["anode", "cathode"]
 
     scaling_factors = p.VALVE_SCALING_PRESSURE * p.VALVE_SCALING_GAS_DENSITY
     influent_density = sum_mass / tank.gas_volume # confirm that this is gas
-    pressure_sqrt = pressure_delta * influent_density / scaling_factors
+    pressure_sqrt = np.sqrt(pressure_delta * influent_density / scaling_factors)
     Y = 1 - min(1, (2/3)*(pressure_delta /pressure))
     # TODO find these values
     valve_control_signal = 0.5 # arbitrary, consider different approaches.
