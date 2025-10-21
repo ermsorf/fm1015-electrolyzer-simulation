@@ -30,10 +30,10 @@ class Parameters:
         self.STOICHIOMETRIC_MATRIX = {"H2O":-2,"H2":2, "O2":1}
         self.ELECTRON_STOICHIOMETRIC_MATRIX = 4
 
-        self.VALVE_SCALING_PRESSURE = 10e5  # Pa
+        self.VALVE_SCALING_PRESSURE = 1e5  # Pa
         self.VALVE_SCALING_GAS_DENSITY = 1  # kg/m3
-        self.VALVE_CAPACITY_ANODE_EFFLUENT = None # Find in problem 7
-        self.VALVE_CAPACITY_CATHODE_EFFLUENT = None # Find in problem 8
+        self.VALVE_CAPACITY_ANODE_EFFLUENT = None # Find in problem 7 , 2.4e-3
+        self.VALVE_CAPACITY_CATHODE_EFFLUENT = None # Find in problem 8, 4.4e-5
 
         # Heavyside-function state changes
         self.IPP_BASE_VALUE = 2e-1 # A/m2
@@ -74,6 +74,7 @@ class Parameters:
             if self.system.time < 60*5:
                 return 20000
             else:
-                    return 0
+                return 10000
+    
 
 params = Parameters()
