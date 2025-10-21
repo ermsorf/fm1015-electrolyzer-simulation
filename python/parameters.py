@@ -27,7 +27,7 @@ class Parameters:
 
         self.ELECTROLYZER_CELL_COUNT = 34
 
-        self.STOICHIOMETRIC_MATRIX = {"H2O":-2, "O2":1, "H2":2}
+        self.STOICHIOMETRIC_MATRIX = {"H2O":-2,"H2":2, "O2":1}
         self.ELECTRON_STOICHIOMETRIC_MATRIX = 4
 
         self.VALVE_SCALING_PRESSURE = 10e5  # Pa
