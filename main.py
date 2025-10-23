@@ -6,6 +6,7 @@ from python.parameters import params as p
 ## Initialize the system
 import numpy as np
 
+### INIT SYSTEM ####
 system = System(p)
 # Track anode and cathode mols over time
 time_history = []
@@ -19,6 +20,7 @@ custom_property_history = {
     "IPP": [],
 }  # Track any custom property
 
+### RUN SIMULATION ###
 duration = 60*10
 dt = 0.1
 steps = int(duration/dt)
@@ -38,29 +40,22 @@ for step in range(steps):
         custom_property_history["Cathode Pressure"].append(system.cathode.pressure)
         custom_property_history["IPP"].append(p.IPP)
     except Exception as e:
-        print(f"Error at step {step}, time {system.time}s: {e}")
+        print(f"\33[91mError at step {step}, time {system.time}s:\33[0m {e}")
         break
 
+### PLOTTING  ###
 
-# normalize plot results to be scaled between [0,1]
-"""
-mols_history_anode = mols_history["anode"]
-for key in mols_history_anode.keys():
-    maxval = max(mols_history_anode[key])
-    minval = min(mols_history_anode[key])
-    for j in range(len(mols_history_anode[key])):
-        mols_history_anode[key][j] -= minval
-        mols_history_anode[key][j] /= (maxval-minval)
+save_plots = True
+show_plots = False
 
-mols_history_cathode = mols_history["cathode"]
-for key in mols_history_cathode.keys():
-    maxval = max(mols_history_cathode[key])
-    minval = min(mols_history_cathode[key])
-    for j in range(len(mols_history_cathode[key])):
-        mols_history_cathode[key][j] -= minval
-        mols_history_cathode[key][j] /= (maxval-minval)
+if max(custom_property_history["IPP"]) - min(custom_property_history["IPP"]) == 0:
+    plot_save_folder = ".plots/steady/"
+else:
+    plot_save_folder = "./plots/step/"
 
-"""
+color_h2o = "#1f77b4"  # blue
+color_h2 = "#ff7f0e"  # orange
+color_o2 = "#2ca02c"  # green
 
 
 #############################################################################################################################
@@ -150,16 +145,6 @@ for key in mols_history_cathode.keys():
 
 # # plt.show()
 
-###############################################################################################################################
-####################################### ALL PLOT CONFIG VARS ##################################################################
-###############################################################################################################################
-
-color_h2o = "#1f77b4"  # blue
-color_h2 = "#ff7f0e"  # orange
-color_o2 = "#2ca02c"  # green
-
-plot_save_folder = "./plots/step/"
-
 
 ###############################################################################################################################
 ####################################### BIG INDIVIDUAL PLOTS ##################################################################
@@ -188,8 +173,8 @@ ax2.tick_params(axis='y', labelcolor='black')
 ax2.legend(loc='center right')
 ax2.grid(True)
 plt.tight_layout()
-plt.savefig(plot_save_folder + 'anode_liquid_species.png', dpi=600)
-# plt.show()
+if save_plots: plt.savefig(plot_save_folder + 'anode_liquid_species.png', dpi=600)
+if show_plots: plt.show()
 
 ###############################################################################################################################
 # Anode gas species plot: left axis GO2, right axis GH2 & GO2
@@ -214,8 +199,9 @@ ax2.tick_params(axis='y', labelcolor='black')
 ax2.legend(loc='lower right')
 ax2.grid(True)
 plt.tight_layout()
-plt.savefig(plot_save_folder + 'anode_gas_species.png', dpi=600)
-# plt.show()
+if save_plots: plt.savefig(plot_save_folder + 'anode_gas_species.png', dpi=600)
+if show_plots: plt.show()
+
 
 ###############################################################################################################################
 # Cathode Liquid species plot: left axis LH2O, right axis LH2 & LO2
@@ -240,8 +226,8 @@ ax2.tick_params(axis='y', labelcolor='black')
 ax2.legend(loc='center right')
 ax2.grid(True)
 plt.tight_layout()
-plt.savefig(plot_save_folder + 'cathode_liquid_species.png', dpi=600)
-# plt.show()
+if save_plots: plt.savefig(plot_save_folder + 'cathode_liquid_species.png', dpi=600)
+if show_plots: plt.show()
 
 ###############################################################################################################################
 # Cathode gas species plot: left axis GO2, right axis GH2 & GO2
@@ -266,8 +252,8 @@ ax2.tick_params(axis='y', labelcolor='black')
 ax2.legend(loc='center right')
 ax2.grid(True)
 plt.tight_layout()
-plt.savefig(plot_save_folder + 'cathode_gas_species.png', dpi=600)
-# plt.show()
+if save_plots: plt.savefig(plot_save_folder + 'cathode_gas_species.png', dpi=600)
+if show_plots: plt.show()
 
 ###############################################################################################################################
 # Anode and Cathode Pressure plots
@@ -278,8 +264,8 @@ plt.xlabel("Time (s)")
 plt.ylabel("Pressure (Pa)")
 plt.grid(True)
 plt.ticklabel_format(style='sci', useOffset=False, axis='y')
-plt.savefig(plot_save_folder + 'anode_pressure.png', dpi=600)
-# plt.show()
+if save_plots: plt.savefig(plot_save_folder + 'anode_pressure.png', dpi=600)
+if show_plots: plt.show()
 
 plt.figure(figsize=(8, 4))
 plt.plot(time_history, custom_property_history["Cathode Pressure"], linewidth=2, color='blue')
@@ -288,8 +274,8 @@ plt.xlabel("Time (s)")
 plt.ylabel("Pressure (Pa)")
 plt.grid(True)
 plt.ticklabel_format(style='sci', useOffset=False, axis='y')
-plt.savefig(plot_save_folder + 'cathode_pressure.png', dpi=600)
-# plt.show()
+if save_plots: plt.savefig(plot_save_folder + 'cathode_pressure.png', dpi=600)
+if show_plots: plt.show()
 
 ###############################################################################################################################
 # # Anode GH2 plot TROUBLESHOOTING
@@ -299,8 +285,8 @@ plt.savefig(plot_save_folder + 'cathode_pressure.png', dpi=600)
 # plt.xlabel("Time (s)")
 # plt.ylabel("H2 (mol)")
 # plt.grid(True)
-# plt.savefig(plot_save_folder + 'anode_h2.png', dpi=600)
-# # plt.show()
+# if save_plots: plt.savefig(plot_save_folder + 'anode_h2.png', dpi=600)
+# if show_plots: plt.show()
 
 
 ###############################################################################################################################
@@ -341,8 +327,8 @@ ax2.legend(loc='center right')
 ax2.ticklabel_format(useOffset=False, axis='y')
 ax2.grid(True)
 plt.tight_layout()
-plt.savefig(plot_save_folder + 'anode_liquid_species.png', dpi=600)
-plt.show()
+if save_plots: plt.savefig(plot_save_folder + 'anode_liquid_species.png', dpi=600)
+if show_plots: plt.show()
 
 # Cathode liquid fractions
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
@@ -368,8 +354,8 @@ ax2.ticklabel_format(useOffset=False, axis='y')
 ax2.legend(loc='center right')
 ax2.grid(True)
 plt.tight_layout()
-plt.savefig(plot_save_folder + 'cathode_liquid_fraction.png', dpi=600)
-# plt.show()
+if save_plots: plt.savefig(plot_save_folder + 'cathode_liquid_fraction.png', dpi=600)
+if show_plots: plt.show()
 
 
 ###############################################################################################################################
@@ -384,9 +370,8 @@ plt.xlabel("Time (s)")
 plt.ylabel("Moles per second (mol/s)")
 plt.grid(True)
 plt.legend(loc='center right')
-plt.savefig(plot_save_folder + 'cathode_o2_diffusion_drag.png', dpi=600)
-
-plt.show()
+if save_plots: plt.savefig(plot_save_folder + 'cathode_o2_diffusion_drag.png', dpi=600)
+if show_plots: plt.show()
 
 ###############################################################################################################################
 ################# Electrolyzer anode and cathode generation history plots #####################################################
@@ -413,8 +398,8 @@ ax2.tick_params(axis='y', labelcolor='black')
 ax2.legend(loc='center right')
 ax2.grid(True)
 plt.tight_layout()
-# plt.savefig(plot_save_folder + 'cathode_liquid_generation.png', dpi=600)
-plt.show()  
+if save_plots: plt.savefig(plot_save_folder + 'cathode_liquid_generation.png', dpi=600)
+if show_plots: plt.show()
 
 # Cathode Gas generation plot
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
@@ -434,8 +419,8 @@ ax2.tick_params(axis='y', labelcolor='black')
 ax2.legend(loc='center right')
 ax2.grid(True)
 plt.tight_layout()
-# plt.savefig(plot_save_folder + 'cathode_gas_generation.png', dpi=600)
-plt.show()
+if save_plots: plt.savefig(plot_save_folder + 'cathode_gas_generation.png', dpi=600)
+if show_plots: plt.show()
 
 
 ###############################################################################################################################
@@ -457,8 +442,8 @@ ax2.tick_params(axis='y', labelcolor='black')
 ax2.legend(loc='center right')
 ax2.grid(True)
 plt.tight_layout()
-# plt.savefig(plot_save_folder + 'anode_liquid_generation.png', dpi=600)
-plt.show()  
+if save_plots: plt.savefig(plot_save_folder + 'anode_liquid_generation.png', dpi=600)
+if show_plots: plt.show()
 
 # Anode Gas generation plot
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
@@ -478,7 +463,7 @@ ax2.tick_params(axis='y', labelcolor='black')
 ax2.legend(loc='center right')
 ax2.grid(True)
 plt.tight_layout()
-# plt.savefig(plot_save_folder + 'anode_gas_generation.png', dpi=600)
-plt.show()
+if save_plots: plt.savefig(plot_save_folder + 'anode_gas_generation.png', dpi=600)
+if show_plots: plt.show()
 
 ###############################################################################################################################
