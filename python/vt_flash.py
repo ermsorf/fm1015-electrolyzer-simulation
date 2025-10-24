@@ -1,10 +1,11 @@
 # Parameters for testing
 import numpy as np
-from parameters import *
+from parameters import Parameters
+p = Parameters
 
 # liquid saturation
 def water_saturation_pressure(T):
-    saturation_pressure = 10**(ANTOINE_A - ANTOINE_B/(ANTOINE_C+T+KELVIN_TO_CELSIUS))*BAR_TO_PA #Saturation pressure of H2O at T (54) [Pa]
+    saturation_pressure = 10**(p.ANTOINE_A - p.ANTOINE_B/(p.ANTOINE_C+T+p.KELVIN_TO_CELSIUS))*p.BAR_TO_PA #Saturation pressure of H2O at T (54) [Pa]
     return saturation_pressure
 
 def water_saturation_volume(T):
@@ -18,7 +19,7 @@ def water_saturation_volume(T):
 def phi(T):
     PHI_CONSTANT = 1.0012
     PHI_SCALING = -1.6e-3
-    phi_exponential = np.exp(8.7*((T+KELVIN_TO_CELSIUS)/373.15))
+    phi_exponential = np.exp(8.7*((T+p.KELVIN_TO_CELSIUS)/373.15))
     phi_liquid_saturation_H2O = PHI_CONSTANT + PHI_SCALING*phi_exponential
     return phi_liquid_saturation_H2O
 
@@ -29,8 +30,8 @@ def fugacity(T):
 
 def Henry(T, element):
     assert element in ["H2", "O2"]
-    Henry_max_H2 = 7.54e4*ATM_TO_PA #Hmax
-    Henry_max_O2 = 7.08e4*ATM_TO_PA
+    Henry_max_H2 = 7.54e4*p.ATM_TO_PA #Hmax
+    Henry_max_O2 = 7.08e4*p.ATM_TO_PA
     Max_Temperature_H2 = 1/(3.09e-3)   #Tmax
     Max_Temoperature_O2 = 1/(2.73e-3) 
     Critical_temperature_H2O  = 641.7 #Critical temp [K]
@@ -57,7 +58,7 @@ def vtflash(V,T,n):
     pressure = np.zeros(3) # Pressure in anode
     pressure[0] = water_saturation_pressure(T) #Ph20 = psath2o, eq 34
     
-    R = IDEAL_GAS_CONSTANT # J/mol*K
+    R = p.IDEAL_GAS_CONSTANT # J/mol*K
     # TODO Split up into readable chunks:
     mols_liquid[0] = (fugacity(T)*V-n[0]*T*R)/(fugacity(T)*water_saturation_volume(T)-R*T)
     mols_gas[0] = n[0]-mols_liquid[0]
@@ -101,8 +102,8 @@ if __name__ == '__main__':
     V ag ≈ 0.02315 m3/mol
     pa ≈ 1.19732 · 105 Pa.
     """
-    T_a = SYSTEM_TEMPERATURE # Anode temperature, [K]
-    V_a = ANODE_SEPARATOR_VOLUME # Anode volume, [M^3]
+    T_a = p.SYSTEM_TEMPERATURE # Anode temperature, [K]
+    V_a = p.ANODE_SEPARATOR_VOLUME # Anode volume, [M^3]
     n_a = [556, 0, 0.7224] # Total number of moles (H2O, H2, O2) in anode tank 
     ans = (vtflash(V_a,T_a,n_a))
     target_values = [

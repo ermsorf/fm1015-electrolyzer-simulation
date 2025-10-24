@@ -7,6 +7,10 @@ class Parameters:
 
     def __init__(self):
         # self.SYSTEM_TEMPERATURE = 273.15 + 60
+        self.BAR_TO_PA = 1e5
+        self.PA_TO_BAR = 1/self.BAR_TO_PA
+        self.KELVIN_TO_CELSIUS = 273.15
+        self.CELSIUS_TO_KELVIN = -self.KELVIN_TO_CELSIUS
 
         self.MEMBRANE_PERMEABILITY_H2 = 5.31e-14  # mol/s/m/Pa
         self.MEMBRANE_PERMEABILITY_O2 = 2.26e-14  # mol/s/m/Pa
