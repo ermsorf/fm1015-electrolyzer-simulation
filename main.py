@@ -64,12 +64,12 @@ if system.time < duration * 0.1:
 ### PLOTTING  ###
 
 save_plots = False
-show_plots = True
+show_plots = False
 
 if max(custom_property_history["IPP"]) - min(custom_property_history["IPP"]) == 0:
-    plot_save_folder = ".plots/steady/"
+    plot_save_folder = __file__+"/../plots/steady/"
 else:
-    plot_save_folder = "./plots/step/"
+    plot_save_folder = __file__+"/../plots/step/"
 
 COLOR_H2O = "#1f77b4"  # blue
 COLOR_H2 = "#ff7f0e"  # orange
