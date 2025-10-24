@@ -66,12 +66,7 @@ def cathode_mass_rate_pump(tank):
     liquid_volume_target = p.CATHODE_LIQUID_VOLUME_TARGET  # m3
     volume_error = liquid_volume_actual - liquid_volume_target  # m3
     
-    # Alternate calculation:
-    H2O_LIQUID_FRACTION_INDEX = 0 
-    reference_mass_ejection = p.REFERENCE_MASS_EJECTION # Use parameter value instead of calculating on the spot
-    reference_mass_ejection /= p.H2O_MOLAR_MASS # Undo molar mass multiplication in provided value
-    reference_mass_ejection *= tank.liquid_fractions[H2O_LIQUID_FRACTION_INDEX] # Instead multiply by liquid fraction
-    # ...and move on as usual.
+    # reference_mass_ejection = p.REFERENCE_MASS_EJECTION
     # Don't multiply by density - gain is already in mass units to match reference_mass_ejection
     mass_rate = reference_mass_ejection + p.CATHODE_SEPARATOR_CONTROLLER_GAIN * volume_error  # kg/s
     return max(mass_rate, 0.0)
