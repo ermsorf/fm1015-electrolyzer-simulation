@@ -12,6 +12,8 @@ class Parameters:
         self.PA_TO_BAR = 1/self.BAR_TO_PA
         self.KELVIN_TO_CELSIUS = 273.15
         self.CELSIUS_TO_KELVIN = -self.KELVIN_TO_CELSIUS
+        self.ATM_TO_PA = 101325
+        self.PA_TO_ATM = 1/self.ATM_TO_PA
 
         # self.SYSTEM_TEMPERATURE = 60 + self.CELSIUS_TO_KELVIN
         
