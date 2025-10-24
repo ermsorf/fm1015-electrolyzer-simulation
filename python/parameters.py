@@ -23,7 +23,7 @@ class Parameters:
         # self.CATHODE_LIQUID_VOLUME_TARGET = self.CATHODE_SEPARATOR_VOLUME / 3 # m3
         self.CATHODE_SEPARATOR_CONTROLLER_GAIN = 20 # - 
         # self.CATHODE_EXTERNAL_PRESSURE = 25e5
-        self.REFERENCE_MASS_EJECTION = 5.1e-3  # kg/s
+        self.REFERENCE_MASS_EJECTION = 5.1e-3  # kg/s 0.003848955975614166
 
         self.ELECTROLYZER_CELL_COUNT = 34
 
@@ -86,7 +86,7 @@ class Parameters:
 
     @property 
     def IPP(self):
-            # return 20000
+            return 20000
             if self.system.time < 60*5:
                 return 20000
             else:
