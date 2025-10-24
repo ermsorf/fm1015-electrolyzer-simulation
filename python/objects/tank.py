@@ -69,13 +69,13 @@ class Tank:
             self.gas_fractions,
             self.liquid_total_molecount,
             self.gas_total_molecount,
-            self.liquid_volume,
-            self.gas_volume,
+            self.liquid_specific_volume,
+            self.gas_specific_volume,
             self.pressure
         ) = results
 
-        self.gas_volume *= self.gas_total_molecount
-        self.liquid_volume *= self.liquid_total_molecount
+        self.gas_volume = self.gas_specific_volume * self.gas_total_molecount
+        self.liquid_volume = self.liquid_specific_volume * self.liquid_total_molecount
 
         # print("Error volume", (self.gas_volume + self.liquid_volume - self.volume) / self.volume )
 

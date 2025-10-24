@@ -19,7 +19,7 @@ def general_valve_effluent(tank: 'Tank', tank_type = Literal["anode", "cathode"]
         pressure_delta = 0
 
     scaling_factors = p.VALVE_SCALING_PRESSURE * p.VALVE_SCALING_GAS_DENSITY
-    influent_density = sum_mass / tank.gas_volume # confirm that this is gas
+    influent_density = sum_mass / tank.gas_specific_volume # confirm that this is gas
     pressure_sqrt = np.sqrt(pressure_delta * influent_density / scaling_factors)
     Y = 1 - min(1, (2/3)*(pressure_delta /pressure))
     # TODO find these values
