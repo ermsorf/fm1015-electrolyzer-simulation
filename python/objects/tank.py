@@ -74,6 +74,11 @@ class Tank:
             self.pressure
         ) = results
 
+        self.gas_volume *= self.gas_total_molecount
+        self.liquid_volume *= self.liquid_total_molecount
+
+        # print("Error volume", (self.gas_volume + self.liquid_volume - self.volume) / self.volume )
+
         if any(x < 0 for x in self.liquid_fractions) or any(x < 0 for x in self.gas_fractions):
             raise ValueError("Negative mole fractions calculated in VT flash.")
         # CHECK are these values correctly updated?:
