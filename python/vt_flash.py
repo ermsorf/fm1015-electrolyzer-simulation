@@ -1,7 +1,7 @@
 # Parameters for testing
 import numpy as np
 from parameters import Parameters
-p = Parameters
+p = Parameters()
 
 # liquid saturation
 def water_saturation_pressure(T):
