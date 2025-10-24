@@ -1,22 +1,24 @@
 # run in home folder if running tests 
 if __name__ == "__main__": import os; import sys; sys.path.append(os.getcwd())
-from parameters import *
-from objects.mols import Mols
-from objects.system import System
-import vt_flash
+from typing import TYPE_CHECKING, Callable
+from warnings import warn
+from python.parameters import params as p
+from python.objects.mols import Mols
+from python import vt_flash
 
-from typing import Callable
+if TYPE_CHECKING:
+    from python.objects.system import System
 
 def bar_to_Pa(p_bar):
     return p_bar * 1e5
 
 class Tank:
-    system: System
-    def __init__(self, system, volume, temperature):
+    system: 'System'
+    def __init__(self, system, volume):
         self.system = system
 
         self.volume = volume  # m3
-        self.temperature = temperature  # K
+        # self.temperature = temperature  # K
 
         self.influent_functions = list()
         self.effluent_functions = list()
@@ -25,19 +27,43 @@ class Tank:
         self.effluent_values = Mols()
 
         self.mols = Mols()
-        self.step_completed = False
         
+        self.step_completed = False # In the future, reset this on global step
 
-    def step(self):
-        if self.step_completed: return
+        self.track_recycled = []  # For analysis purposes
+
+    @property
+    def temperature(self):
+        return p.SYSTEM_TEMPERATURE
+
+    def reset_frame(self):
+        self.influent_values = Mols()
+        self.effluent_values = Mols()
+        self.step_completed = False
+
+    def calc_rates(self):
+        self.influent_values = Mols() # reset to zero
+        self.effluent_values = Mols() # reset to zero
+
         for fun in self.influent_functions:
-            self.mols +=fun(self)
+            self.influent_values = self.influent_values + fun(self)
+
         for fun in self.effluent_functions:
-            self.mols -=fun(self)
+            self.effluent_values = self.effluent_values + fun(self)
+            
+                
+        
+    def update_mols(self):
+        if self.step_completed: warn("Tried to update mols twice in step"); return
+        self.mols = self.mols + ((self.influent_values - self.effluent_values) * self.system.dt)
         self.step_completed = True
 
     def update_vt_flash(self):
-        results = vt_flash.vtflash(self.volume, self.temperature, self.mols.get_sums().values())
+        """ Updates tank state using VT flash calculations. Updates mole fractions"""
+        if any(x < 0 for x in list(self.mols.values())):
+                raise ValueError("Negative mole counts in tank before VT flash.")
+        
+        results = vt_flash.vtflash(self.volume, self.temperature, list(self.mols.get_sums().values()))
         (
             self.liquid_fractions,
             self.gas_fractions,
@@ -47,6 +73,9 @@ class Tank:
             self.gas_volume,
             self.pressure
         ) = results
+
+        if any(x < 0 for x in self.liquid_fractions) or any(x < 0 for x in self.gas_fractions):
+            raise ValueError("Negative mole fractions calculated in VT flash.")
         # CHECK are these values correctly updated?:
         # (fear is, these values are added to the total somehow / not 
         # representative of a partial volume etc etc.)
@@ -59,44 +88,22 @@ class Tank:
             GH2=self.gas_fractions[1]*self.gas_total_molecount,
             GO2=self.gas_fractions[2]*self.gas_total_molecount
         )
+        # print("VT Flash Results:", results)
 
         
 
-    def add_influent(self, influent: Callable) -> None:
+    def add_influent(self, *influent: Callable) -> None:
         """
         List of functions that add mols to the tank.
         Each function should take the tank as an argument and modify its liq_mol and gas_mol attributes.
         """
-        self.influent_functions.append(influent)
+        self.influent_functions.extend(influent)
 
-    def add_effluent(self, effluent: Callable) -> None:
+    def add_effluent(self, *effluent: Callable) -> None:
         """
         List of functions that remove mols from the tank.
         Each function should take the tank as an argument
         and modify its liq_mol and gas_mol attributes.
         """
-        self.effluent_functions.append(effluent)
+        self.effluent_functions.extend(effluent)
 
-# TODO push function to other file / keep for now and kill down the line
-def initialize_test_tanks():
-    system = System()
-    atank = Tank(system, ANODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE, 1.2e5)
-
-    atank.mols["GO2"] = (ANODE_SEPARATOR_VOLUME - ANODE_LIQUID_VOLUME) * atank.pressure / (IDEAL_GAS_CONSTANT * atank.temperature)
-    atank.mols["LH2O"] = ANODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
-
-    # m3 * kg/m3 / kg/mol = mol
-
-    ctank = Tank(system, CATHODE_SEPARATOR_VOLUME, SYSTEM_TEMPERATURE, 30e5)
-    ctank.mols["GH2"] = (CATHODE_SEPARATOR_VOLUME - CATHODE_LIQUID_VOLUME) * ctank.pressure / (IDEAL_GAS_CONSTANT * ctank.temperature)
-    ctank.mols["LH2O"] = CATHODE_LIQUID_VOLUME * H2O_DENSITY / H2O_MOLAR_MASS
-
-    print(f"Anode mols: {atank.mols}")
-    print(f"Cathode mols: {ctank.mols}")
-
-    return system, atank, ctank
-
-
-
-if __name__ == "__main__":
-    initialize_test_tanks()

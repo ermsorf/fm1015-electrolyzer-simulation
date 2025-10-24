@@ -93,7 +93,7 @@ def vtflash(V,T,n):
 
 if __name__ == '__main__':
     """ Expected values
-    xa ≈ 0.999984, 0, 1.5588 · 10−5
+    xa ≈ 0.999984, 0, 1.5588 · 10−5
     ya = (0.16589, 0, 0.83411)
     naℓ ≈ 555.87 mol
     nag ≈ 0.85569 mol
