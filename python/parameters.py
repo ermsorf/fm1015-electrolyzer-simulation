@@ -6,11 +6,21 @@ class Parameters:
         self.system = system
 
     def __init__(self):
+
         # self.SYSTEM_TEMPERATURE = 273.15 + 60
         self.BAR_TO_PA = 1e5
         self.PA_TO_BAR = 1/self.BAR_TO_PA
         self.KELVIN_TO_CELSIUS = 273.15
         self.CELSIUS_TO_KELVIN = -self.KELVIN_TO_CELSIUS
+
+        # self.SYSTEM_TEMPERATURE = 60 + self.CELSIUS_TO_KELVIN
+        
+        self.CELSIUS_TO_KELVIN = 273.15
+        self.KELVIN_TO_CELSIUS = -self.CELSIUS_TO_KELVIN
+        self.BAR_TO_PA = 1e5
+        self.ATM_TO_PA = 101325
+        self.PA_TO_ATM = 1/self.ATM_TO_PA
+        self.PA_TO_BAR = 1/self.BAR_TO_PA
 
         self.MEMBRANE_PERMEABILITY_H2 = 5.31e-14  # mol/s/m/Pa
         self.MEMBRANE_PERMEABILITY_O2 = 2.26e-14  # mol/s/m/Pa
@@ -21,12 +31,13 @@ class Parameters:
         # self.ANODE_LIQUID_VOLUME_TARGET = self.ANODE_SEPARATOR_VOLUME / 3 # m3
         self.ANODE_REFERENCE_INJECTION = 3.17e-2 # mol/s
         self.ANODE_SEPARATOR_CONTROLLER_GAIN = 10**3 # -
-        self.ANODE_EXTERNAL_PRESSURE = 1e5
+        self.ANODE_EXTERNAL_PRESSURE = 1*self.BAR_TO_PA
+
 
         self.CATHODE_SEPARATOR_VOLUME = 0.005 # m3
         # self.CATHODE_LIQUID_VOLUME_TARGET = self.CATHODE_SEPARATOR_VOLUME / 3 # m3
         self.CATHODE_SEPARATOR_CONTROLLER_GAIN = 20 # - 
-        # self.CATHODE_EXTERNAL_PRESSURE = 25e5
+        # self.CATHODE_EXTERNAL_PRESSURE = 25e5 * self.BAR
         self.REFERENCE_MASS_EJECTION = 5.1e-3  # kg/s 0.003848955975614166
 
         self.ELECTROLYZER_CELL_COUNT = 34
@@ -63,6 +74,7 @@ class Parameters:
         self.MAX_TANK_PRESSURE = 16e5 # Pa
         self.MIN_TANK_TEMPERATURE = 273.2 # K
         self.MAX_TANK_TEMPERATURE = 473.2 # K
+
 
     @property
     def SYSTEM_TEMPERATURE(self):
