@@ -11,6 +11,7 @@ def inlet_pump(tank: Tank):
         inlet_flow = 0  # Prevent negative flow rates
 
     # print("Inlet flow (mol/s):", Mols(LH2O=inlet_flow))
+    tank.system.track_inlet.append(Mols(LH2O=inlet_flow))
     return Mols(LH2O=inlet_flow) 
 
     

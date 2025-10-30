@@ -30,6 +30,9 @@ class System:
 
         self.initialize_system()
 
+        self.track_inlet = []
+        self.track_recycled = []
+
     def initialize_system(self):
         self.anode = Tank(self, p.ANODE_SEPARATOR_VOLUME)
         self.cathode = Tank(self, p.CATHODE_SEPARATOR_VOLUME)
@@ -88,7 +91,7 @@ class System:
             cathode_count = self.electrolyzer.get_counts_cathode() * dt
 
             for key in anode_count.keys():
-                if anode_count[key] < 0 and abs(anode_count[key]) > self.anode.mols[key]:
+                if False: #anode_count[key] < 0 and abs(anode_count[key]) > self.anode.mols[key]:
                     self.anode.mols[key] = 0
                     print(f"\33[31mNot enough {key} in anode tank to satisfy electrolyzer consumption.\33[0m")
                 else: self.anode.mols[key] += anode_count[key]
