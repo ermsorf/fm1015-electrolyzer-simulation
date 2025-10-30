@@ -34,7 +34,7 @@ class Parameters:
         self.ANODE_REFERENCE_INJECTION = 3.17e-2 # mol/s
         self.ANODE_SEPARATOR_CONTROLLER_GAIN = 10**3 # -
         self.ANODE_EXTERNAL_PRESSURE = 1*self.BAR_TO_PA
-        self.ANODE_VALVE_MASS_FLOW_CAPACITY = 2.4e-3
+        self.ANODE_VALVE_MASS_FLOW_CAPACITY = 2.1667e-3
 
 
         self.CATHODE_SEPARATOR_VOLUME = 0.005 # m3
@@ -42,7 +42,7 @@ class Parameters:
         self.CATHODE_SEPARATOR_CONTROLLER_GAIN = 20 # - 
         # self.CATHODE_EXTERNAL_PRESSURE = 25e5 * self.BAR
         self.REFERENCE_MASS_EJECTION = 5.1e-3  # kg/s 0.003848955975614166
-        self.CATHODE_VALVE_MASS_FLOW_CAPACITY = 4.4e-5
+        self.CATHODE_VALVE_MASS_FLOW_CAPACITY = 4.334e-5
 
         self.ELECTROLYZER_CELL_COUNT = 34
 
