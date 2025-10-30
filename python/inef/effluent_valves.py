@@ -23,7 +23,7 @@ def general_valve_effluent(tank: 'Tank', tank_type = Literal["anode", "cathode"]
     pressure_sqrt = np.sqrt(pressure_delta/p.VALVE_SCALING_PRESSURE)*np.sqrt(influent_density/p.VALVE_SCALING_GAS_DENSITY)
     Y = 1 - min(1, (2/3)*(pressure_delta /pressure))
     # TODO find these values
-    valve_control_signal = 0.5 # arbitrary, consider different approaches.
+    valve_control_signal = p.VALVE_CONTROL_SIGNAL # arbitrary, consider different approaches.
     valve_mass_flow = valve_control_signal*mass_flow_capacity*Y*pressure_sqrt*0.8185
 
     valve_mole_flow = valve_mass_flow/sum_mass

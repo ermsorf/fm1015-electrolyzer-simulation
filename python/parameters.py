@@ -53,6 +53,7 @@ class Parameters:
         self.VALVE_SCALING_GAS_DENSITY = 1  # kg/m3
         self.VALVE_CAPACITY_ANODE_EFFLUENT = None # Find in problem 7 , 2.4e-3
         self.VALVE_CAPACITY_CATHODE_EFFLUENT = None # Find in problem 8, 4.4e-5
+        self.VALVE_CONTROL_SIGNAL = 0.5 # [0,1]
 
         # Heavyside-function state changes
         self.IPP_BASE_VALUE = 2e-1 # A/m2
