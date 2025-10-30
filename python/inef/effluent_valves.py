@@ -6,7 +6,7 @@ from typing import Literal
 def general_valve_effluent(tank: 'Tank', tank_type = Literal["anode", "cathode"]):
     pressure = tank.pressure
     external_pressure = p.ANODE_EXTERNAL_PRESSURE if tank_type == "anode" else p.CATHODE_EXTERNAL_PRESSURE
-    mass_flow_capacity = 2.4e-3 if tank_type == "anode" else 4.4e-5  
+    mass_flow_capacity = p.ANODE_VALVE_MASS_FLOW_CAPACITY if tank_type == "anode" else p.CATHODE_VALVE_MASS_FLOW_CAPACITY
     pressure_delta = pressure - external_pressure
     molar_masses = [p.H2O_MOLAR_MASS,p.H2_MOLAR_MASS,p.O2_MOLAR_MASS]
     # This breaks if gas fractions is a dict: (fix: use .values())
@@ -20,11 +20,11 @@ def general_valve_effluent(tank: 'Tank', tank_type = Literal["anode", "cathode"]
 
     scaling_factors = p.VALVE_SCALING_PRESSURE * p.VALVE_SCALING_GAS_DENSITY
     influent_density = sum_mass / tank.gas_specific_volume # confirm that this is gas
-    pressure_sqrt = np.sqrt(pressure_delta * influent_density / scaling_factors)
+    pressure_sqrt = np.sqrt(pressure_delta/p.VALVE_SCALING_PRESSURE)*np.sqrt(influent_density/p.VALVE_SCALING_GAS_DENSITY)
     Y = 1 - min(1, (2/3)*(pressure_delta /pressure))
     # TODO find these values
     valve_control_signal = 0.5 # arbitrary, consider different approaches.
-    valve_mass_flow = valve_control_signal*mass_flow_capacity*Y*pressure_sqrt
+    valve_mass_flow = valve_control_signal*mass_flow_capacity*Y*pressure_sqrt*0.8185
 
     valve_mole_flow = valve_mass_flow/sum_mass
 
