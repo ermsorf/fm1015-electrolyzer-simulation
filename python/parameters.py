@@ -107,3 +107,122 @@ class Parameters:
     
 
 params = Parameters()
+
+
+
+if __name__ == "__main__":
+    from numpy import sqrt
+    p = params
+    # Problem 1
+    stoichiometric_matrix = {"H2O":-2,"H2":2, "O2":1}
+    electron_stoichiometric_matrix = 4
+
+    # Problem 2
+    # Molar amounts of liquid in tanks
+    M_h2o = p.H2O_MOLAR_MASS
+    rho_h2o = p.H2O_DENSITY
+    anode_water_amount = 1/3 * p.ANODE_SEPARATOR_VOLUME * rho_h2o / M_h2o
+    cathode_water_amount = 1/3 * p.CATHODE_SEPARATOR_VOLUME * rho_h2o / M_h2o
+
+    print("\33[30mProblem 2\33[0m")
+    print("Anode H2O mols: ", anode_water_amount)
+    print("Cathode H2O mols: ", cathode_water_amount)
+
+    # Problem 3
+    A = p.ANTOINE_A
+    B = p.ANTOINE_B
+    C = p.ANTOINE_C
+
+    # anode
+    p_a = 1.2e5
+    p_a_h20_sat = 1e5 * 10**(A - (B)/(C + (p.SYSTEM_TEMPERATURE - 273.15)))
+    p_a_o2 = p_a - p_a_h20_sat
+
+    n_a_o2 = (p_a_o2 * 2/3 * p.ANODE_SEPARATOR_VOLUME)/(p.IDEAL_GAS_CONSTANT * p.SYSTEM_TEMPERATURE)
+
+    # cathode
+    p_c = 30e5
+    p_c_h2o_sat = p_a_h20_sat
+    p_c_h2 = p_c - p_c_h2o_sat
+
+    n_c_h2 = (p_c_h2 * 2/3 * p.CATHODE_SEPARATOR_VOLUME)/(p.IDEAL_GAS_CONSTANT * p.SYSTEM_TEMPERATURE)
+
+    print("\33[31mProblem 3 \33[0m")
+    print("Anode GO2 mols: ", n_a_o2)
+    print("Cathode GH2 mols: ", n_c_h2)
+
+
+    # Problem 4
+    nd_g_h2o = p.ELECTROLYZER_CELL_COUNT * (p.STOICHIOMETRIC_MATRIX["H2O"]/p.ELECTRON_STOICHIOMETRIC_MATRIX) * (p.MEMBRANE_AREA_SUPERFICIAL * p.IPP)/(p.FARADAY_CONSTANT)
+    nd_i_h2o = -nd_g_h2o
+
+    print("\33[32mProblem 4\33[0m")
+    print("Water consumption rate: ", nd_g_h2o)
+    print("Inlet pump rate: ", nd_i_h2o)
+
+    # Problem 5
+
+    # approx, nd_d = nd_d_h2o
+
+    eta_d = 1.34 * 1e-2 * p.SYSTEM_TEMPERATURE + 0.03
+    
+    nd_d_h2o = p.ELECTROLYZER_CELL_COUNT * eta_d * (p.MEMBRANE_AREA_SUPERFICIAL * p.IPP)/(p.FARADAY_CONSTANT)
+    md_d_h2o = p.H2O_MOLAR_MASS * nd_d_h2o
+
+    md_cr = md_d_h2o
+
+    print("\33[33mProblem 5\33[0m")
+    print(f"Drag through membrane: {nd_d_h2o} mol, {md_d_h2o} kg")
+
+
+    # Problem 6
+    nd_g_o2 = (p.STOICHIOMETRIC_MATRIX["O2"]/p.ELECTRON_STOICHIOMETRIC_MATRIX) * p.ELECTROLYZER_CELL_COUNT * (p.MEMBRANE_AREA_SUPERFICIAL * p.IPP)/(p.FARADAY_CONSTANT)
+    nd_g_h2 = (p.STOICHIOMETRIC_MATRIX["H2"]/p.ELECTRON_STOICHIOMETRIC_MATRIX) * p.ELECTROLYZER_CELL_COUNT * (p.MEMBRANE_AREA_SUPERFICIAL * p.IPP)/(p.FARADAY_CONSTANT)
+
+    print("\33[34mProblem 6\33[0m")
+    print("O2 generation: ", nd_g_o2)
+    print("H2 generation: ", nd_g_h2)
+    
+    # Problem 7
+    nd_a_e_o2 = nd_g_o2
+    md_a_e_o2 = p.O2_MOLAR_MASS * nd_a_e_o2
+
+
+    # Upstream gas density
+    rho_a = (p.O2_MOLAR_MASS * p_a)/(p.IDEAL_GAS_CONSTANT * p.SYSTEM_TEMPERATURE)
+
+    # ISA valve relation
+    delta_p_a = p_a - p.ANODE_EXTERNAL_PRESSURE
+    Y_a = 1 - min(1, 2/3 * (delta_p_a/p_a))
+    valve_control_signal_a = 0.5
+    md_a_e_c = (md_a_e_o2)/(valve_control_signal_a * Y_a * sqrt(delta_p_a / p.VALVE_SCALING_PRESSURE) * sqrt(rho_a / p.VALVE_SCALING_GAS_DENSITY))
+
+    print("\33[35mProblem 7\33[0m")
+    print(f"Anode valve capacity: {nd_a_e_o2} mol, {md_a_e_c} kg")
+
+    # Problem 8
+    nd_c_e_h2 = nd_g_h2
+    md_c_e_h2 = p.H2_MOLAR_MASS * nd_c_e_h2
+
+    # Upstream gas density
+    rho_c = (p.H2_MOLAR_MASS * p_c)/(p.IDEAL_GAS_CONSTANT * p.SYSTEM_TEMPERATURE)
+    
+    # ISA valve relation
+    delta_p_c = p_c - p.CATHODE_EXTERNAL_PRESSURE
+    Y_c = 1 - min(1, 2/3 * delta_p_c/p_c)
+
+    valve_control_signal_c = 0.5
+    md_c_e_c = (md_c_e_h2)/(valve_control_signal_c * Y_c * sqrt(delta_p_c / p.VALVE_SCALING_PRESSURE) * sqrt(rho_c / p.VALVE_SCALING_GAS_DENSITY))
+    
+
+    print("\33[36mProblem 8\33[0m")
+    print(f"Cathode valve capacity: {nd_c_e_h2} mol, {md_c_e_c} kg")
+
+
+
+
+
+
+    
+
+    
