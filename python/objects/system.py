@@ -38,12 +38,12 @@ class System:
         self.cathode = Tank(self, p.CATHODE_SEPARATOR_VOLUME)
 
         self.anode.mols = Mols(
-            GO2 = 0.7221,
-            LH2O = 550
+            GO2 = 0.7224280840320573,
+            LH2O = 555.5555555555555
         )
         self.cathode.mols = Mols(
-            GH2 = 3.5863,
-            LH2O = 91.67
+            GH2 = 3.58634751406078,
+            LH2O = 92.5925925925926
         )
 
         self.anode.update_vt_flash() # update gas/liquid fractions, pressures

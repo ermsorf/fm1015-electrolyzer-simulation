@@ -47,27 +47,12 @@ def recycled(tank):
 
 def cathode_mass_rate_pump(tank):
     """md_p__cr. Compute the mass flow rate of the cathode pump. """
-    # Calculate reference mass ejection based on drag (liquid mass flow INTO cathode)
-    p.DRAG_BIAS = 0.3e-1 # 0.03
-    p.DRAG_SCALING_FACTOR = 1.34e-2
-    drag_efficiency = p.DRAG_BIAS + p.DRAG_SCALING_FACTOR*tank.system.anode.temperature 
-    drag_capacity = drag_efficiency * (p.MEMBRANE_AREA_SUPERFICIAL / p.FARADAY_CONSTANT) * p.IPP
-    fractions = tank.system.anode.liquid_fractions
-    
-    # Calculate molar flow rates for each species via drag
-    drag_mols = Mols()
-    for fraction, sp in zip(fractions, ["LH2O", "LH2","LO2"]):
-        drag_mols[sp] = fraction*drag_capacity*p.ELECTROLYZER_CELL_COUNT
-    
-    # Convert molar flow to mass flow (kg/s)
-    molar_masses = {"LH2O": p.H2O_MOLAR_MASS, "LH2": p.H2_MOLAR_MASS, "LO2": p.O2_MOLAR_MASS}
-    reference_mass_ejection = sum([drag_mols[sp] * molar_masses[sp] for sp in ["LH2O", "LH2", "LO2"]])
 
     liquid_volume_actual = tank.mols["LH2O"] * p.H2O_MOLAR_MASS / p.H2O_DENSITY  # m3
     liquid_volume_target = p.CATHODE_LIQUID_VOLUME_TARGET  # m3
     volume_error = liquid_volume_actual - liquid_volume_target  # m3
     
-    # reference_mass_ejection = p.REFERENCE_MASS_EJECTION
+    reference_mass_ejection = p.REFERENCE_MASS_EJECTION
     # Don't multiply by density - gain is already in mass units to match reference_mass_ejection
     mass_rate = reference_mass_ejection + p.CATHODE_SEPARATOR_CONTROLLER_GAIN * volume_error  # kg/s
     return max(mass_rate, 0.0)

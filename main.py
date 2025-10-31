@@ -28,7 +28,7 @@ custom_property_history = {
 }  # Track any custom property
 
 ### RUN SIMULATION ###
-duration = 60*10
+duration = 60*20
 dt = 0.1
 steps = int(duration/dt)
 
@@ -61,8 +61,8 @@ if system.time < duration * 0.1:
 
 ### PLOTTING  ###
 
-save_plots = False
-show_plots = False
+save_plots = True
+show_plots = True
 
 if max(custom_property_history["IPP"]) - min(custom_property_history["IPP"]) == 0:
     plot_save_folder = __file__+"/../plots/steady/"
@@ -94,8 +94,8 @@ ax1.grid(True)
 
 ax2.plot(time_history_min, tanks_mol_history["anode"]["LH2"], label=r"$x_{\mathrm{H_2}}$", linewidth=1.5, color=COLOR_H2)
 ax2.plot(time_history_min, tanks_mol_history["anode"]["LO2"], label=r"$x_{\mathrm{O_2}}$", linewidth=1.5, color=COLOR_O2)
-ax2.set_xlabel(r"$t$ [min]")
-ax2.set_ylabel(r"$x_{\mathrm{H_2}}$, $x_{\mathrm{O_2}}$ [mol]")
+ax2.set_xlabel(r"$t$ [min]", fontsize=16)
+ax2.set_ylabel(r"$x_{\mathrm{H_2}}$, $x_{\mathrm{O_2}}$ [mol]", fontsize=16)
 # Place the right label outside and move it further right to avoid overlapping ax1
 ax2.yaxis.set_label_position('right')
 ax2.legend(loc='center right')
@@ -110,15 +110,15 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
 fig.suptitle('Anode Gas Species', fontsize=16)
 
 ax1.plot(time_history_min, tanks_mol_history["anode"]["GO2"], label=r"$y_{\mathrm{O_2}}$", linewidth=2, color=COLOR_O2)
-ax1.set_xlabel(r"$t$ [min]")
-ax1.set_ylabel(r"$y_{\mathrm{O_2}}$ [mol]")
+ax1.set_xlabel(r"$t$ [min]", fontsize=16)
+ax1.set_ylabel(r"$y_{\mathrm{O_2}}$ [mol]", fontsize=16)
 ax1.legend(loc='center right')
 ax1.grid(True)
 
 ax2.plot(time_history_min, tanks_mol_history["anode"]["GH2"], label="GH2", linewidth=1.5, color=COLOR_H2)
 ax2.plot(time_history_min, tanks_mol_history["anode"]["GH2O"], label="GH2O", linewidth=1.5, color=COLOR_H2O)
-ax2.set_xlabel(r"$t$ [min]")
-ax2.set_ylabel(r"$y_{\mathrm{H_2}}$, $y_{\mathrm{H_2O}}$ [mol]")
+ax2.set_xlabel(r"$t$ [min]", fontsize=16)
+ax2.set_ylabel(r"$y_{\mathrm{H_2}}$, $y_{\mathrm{H_2O}}$ [mol]", fontsize=16)
 ax2.yaxis.set_label_position('right')
 ax2.legend(loc='center right')
 ax2.grid(True)
@@ -133,8 +133,8 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
 fig.suptitle('Cathode Liquid Species', fontsize=16)
 
 ax1.plot(time_history_min, tanks_mol_history["cathode"]["LH2O"], label="LH2O", linewidth=2, color='tab:blue')
-ax1.set_xlabel(r"$t$ [min]")
-ax1.set_ylabel(r"$x_{\mathrm{H_2O}}$ [mol]")
+ax1.set_xlabel(r"$t$ [min]", fontsize=16)
+ax1.set_ylabel(r"$x_{\mathrm{H_2O}}$ [mol]", fontsize=16)
 ax1.legend(loc='center right')
 ax1.grid(True)
 
@@ -604,6 +604,7 @@ if save_plots: plt.savefig(plot_save_folder + "comparison_anode_molar_balance.pn
 if show_plots: plt.show()
 
 
+
 # plt.figure(figsize=(8, 4))
 # plt.plot(time_history_min, [tanks_mol_history["cathode"][i]["GH2"] / (tanks_mol_history["cathode"][i]["GH2"]+tanks_mol_history["cathode"][i]["GH2O"]+tanks_mol_history["cathode"][i]["GO2"]) for i in range(len(tanks_mol_history["cathode"]))], linewidth=2, color='green')
 # plt.title(r"Cathode $y_{\mathrm{H_2}}$")
@@ -613,14 +614,16 @@ if show_plots: plt.show()
 # if save_plots: plt.savefig(plot_save_folder + "comparison_h2_mol_fraction.png")
 # plt.show()
 
-
+plt.close('all')
 
 inlet_values = [system.track_inlet[i]["LH2O"] for i in range(len(system.track_inlet))]
 recycled_values = [system.track_recycled[i]["LH2O"] for i in range(len(system.track_recycled))]
 plt.figure(figsize=(8, 4))
-plt.plot(time_history_min, inlet_values, linewidth=2, color='blue', label=r'Inlet')
-plt.plot(time_history_min, recycled_values, linewidth=2, color='cyan', label=r'Recycled')
+plt.plot(time_history_min, inlet_values, linewidth=2, color='cyan', label=r'Inlet')
+plt.plot(time_history_min, recycled_values, linewidth=2, color='blue', label=r'Recycled')
 plt.legend()
 plt.grid(True)
 if save_plots: plt.savefig(plot_save_folder + "comparison_molar_flow_rate.png")
 if show_plots: plt.show()
+
+plt.show()

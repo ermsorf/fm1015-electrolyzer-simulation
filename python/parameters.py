@@ -30,15 +30,15 @@ class Parameters:
         self.MEMBRANE_THICKNESS = 200e-6  # m
 
         self.ANODE_SEPARATOR_VOLUME = 0.030 # m3
-        # self.ANODE_LIQUID_VOLUME_TARGET = self.ANODE_SEPARATOR_VOLUME / 3 # m3
-        self.ANODE_REFERENCE_INJECTION = 3.17e-2 # mol/s
+        self.ANODE_LIQUID_VOLUME_TARGET = self.ANODE_SEPARATOR_VOLUME / 3 # m3
+        self.ANODE_REFERENCE_INJECTION = 0.03171641791044776 # 3.17e-2 # mol/s
         self.ANODE_SEPARATOR_CONTROLLER_GAIN = 10**3 # -
         self.ANODE_EXTERNAL_PRESSURE = 1*self.BAR_TO_PA
         self.ANODE_VALVE_MASS_FLOW_CAPACITY = 2.1667e-3
 
 
         self.CATHODE_SEPARATOR_VOLUME = 0.005 # m3
-        # self.CATHODE_LIQUID_VOLUME_TARGET = self.CATHODE_SEPARATOR_VOLUME / 3 # m3
+        self.CATHODE_LIQUID_VOLUME_TARGET = self.CATHODE_SEPARATOR_VOLUME / 3 # m3
         self.CATHODE_SEPARATOR_CONTROLLER_GAIN = 20 # - 
         # self.CATHODE_EXTERNAL_PRESSURE = 25e5 * self.BAR
         self.REFERENCE_MASS_EJECTION = 5.1e-3  # kg/s 0.003848955975614166
@@ -97,17 +97,9 @@ class Parameters:
             else:
                 return 24.5e5
     
-    @property
-    def ANODE_LIQUID_VOLUME_TARGET(self):
-            return self.ANODE_SEPARATOR_VOLUME / 3 # m3
-
-    @property
-    def CATHODE_LIQUID_VOLUME_TARGET(self):
-            return self.CATHODE_SEPARATOR_VOLUME / 3 # m3
-
     @property 
     def IPP(self):
-            return 20000
+            # return 20000
             if self.system.time < 60*5:
                 return 20000
             else:
