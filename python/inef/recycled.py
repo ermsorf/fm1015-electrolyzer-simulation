@@ -5,7 +5,6 @@ from python.parameters import params as p
 def anode_in_recycled(anode_tank):
     cathode_tank = anode_tank.system.cathode
     result = recycled(cathode_tank)
-    anode_tank.track_recycled.append(result)
     anode_tank.system.track_recycled.append(result)
     return result
 
@@ -52,7 +51,7 @@ def cathode_mass_rate_pump(tank):
     liquid_volume_target = p.CATHODE_LIQUID_VOLUME_TARGET  # m3
     volume_error = liquid_volume_actual - liquid_volume_target  # m3
     
-    reference_mass_ejection = p.REFERENCE_MASS_EJECTION
+    reference_mass_ejection = p.CATHODE_REFERENCE_MASS_EJECTION
     # Don't multiply by density - gain is already in mass units to match reference_mass_ejection
     mass_rate = reference_mass_ejection + p.CATHODE_SEPARATOR_CONTROLLER_GAIN * volume_error  # kg/s
     return max(mass_rate, 0.0)
