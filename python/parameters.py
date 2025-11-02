@@ -79,10 +79,15 @@ class Parameters:
         self.MIN_TANK_TEMPERATURE = 273.2 # K
         self.MAX_TANK_TEMPERATURE = 473.2 # K
 
+        # Switch dynamic simulation on/off
+        self.steadystate = True
+
 
     @property
     def SYSTEM_TEMPERATURE(self):
+        if self.steadystate:
           return 273.15 + 60
+        else:
           if self.system.time < 60*15:
                 return 273.15 + 60
           else:
@@ -90,7 +95,9 @@ class Parameters:
     
     @property
     def CATHODE_EXTERNAL_PRESSURE(self):
+        if self.steadystate:
             return 25e5
+        else:
             if self.system.time < 60*10:
                 return 25e5
             else:
@@ -98,7 +105,9 @@ class Parameters:
     
     @property 
     def IPP(self):
+        if self.steadystate:
             return 20000
+        else:
             if self.system.time < 60*5:
                 return 20000
             else:

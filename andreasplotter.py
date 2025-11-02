@@ -77,7 +77,7 @@ if system.time < duration * 0.1:
 
 save_plots = True
 show_plots = False
-steadystate = True
+steadystate: bool = p.steadystate # Todo add more plot states? "Eh :/", says Andy.
 
 if steadystate:
     plot_save_folder = __file__+"/../plots/steady/"
