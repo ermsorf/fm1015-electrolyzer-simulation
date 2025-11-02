@@ -70,6 +70,11 @@ class System:
             self.step(dt)
 
     def step(self, dt):
+            # Reset electrolyzer for next step
+            self.electrolyzer.reset_frame()
+            self.anode.reset_frame()
+            self.cathode.reset_frame()
+
             self.dt = dt
             # Update electrolyzer production rate values. (Updating electrolyzer influent and effluent return values)
             self.electrolyzer.step()
@@ -104,10 +109,6 @@ class System:
             self.anode.update_vt_flash()
             self.cathode.update_vt_flash()  
             
-            # Reset electrolyzer for next step
-            self.electrolyzer.reset_frame()
-            self.anode.reset_frame()
-            self.cathode.reset_frame()
 
             # Iterate time
             self.time += dt

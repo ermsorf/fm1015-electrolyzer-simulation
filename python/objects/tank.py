@@ -44,12 +44,18 @@ class Tank:
     def calc_rates(self):
         self.influent_values = Mols() # reset to zero
         self.effluent_values = Mols() # reset to zero
+        self.tracked_values = {}
+
 
         for fun in self.influent_functions:
-            self.influent_values = self.influent_values + fun(self)
+            funresult = fun(self)
+            self.influent_values = self.influent_values + funresult
+            self.tracked_values.update({"influent_"+fun.__name__: funresult})
+
 
         for fun in self.effluent_functions:
             self.effluent_values = self.effluent_values + fun(self)
+            self.tracked_values.update({"effluent_"+fun.__name__: fun(self)})
             
                 
         
