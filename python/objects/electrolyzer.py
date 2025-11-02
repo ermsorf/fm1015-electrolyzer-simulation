@@ -144,8 +144,13 @@ class Electrolyzer:
         if self.step_completed:
             warn("Called electrolyzer twice")
             return
-        DRAG_BIAS = 0.3e-1 # 0.03
-        DRAG_SCALING_FACTOR = 1.34e-2
+        
+        if p.drag_formula == "suermann":
+            DRAG_BIAS = -3 # 0.03
+            DRAG_SCALING_FACTOR = 1.82e-2
+        else: # drag formula == onda
+            DRAG_BIAS = 0.03
+            DRAG_SCALING_FACTOR = 1.34e-2
         drag_efficiency = DRAG_BIAS + DRAG_SCALING_FACTOR*self.anode.temperature 
         drag_capacity = drag_efficiency * (p.MEMBRANE_AREA_SUPERFICIAL / p.FARADAY_CONSTANT) * p.IPP
         fractions = self.anode.liquid_fractions

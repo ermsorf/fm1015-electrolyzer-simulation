@@ -44,6 +44,7 @@ class Parameters:
         self.CATHODE_VALVE_MASS_FLOW_CAPACITY = 4.334e-5
 
         self.ELECTROLYZER_CELL_COUNT = 34
+        self.drag_formula = "onda" # "onda" or "suermann"
 
         self.STOICHIOMETRIC_MATRIX = {"H2O":-2,"H2":2, "O2":1}
         self.ELECTRON_STOICHIOMETRIC_MATRIX = 4
