@@ -40,7 +40,8 @@ custom_property_history = {
 }  # Track any custom property
 
 ### RUN SIMULATION ###
-duration = 60*10
+# run for 10 minutes if steady state, else 20 minutes
+duration = 60*(20-10*p.steadystate)
 dt = 0.1
 steps = int(duration/dt)
 
