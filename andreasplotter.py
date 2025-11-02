@@ -183,9 +183,8 @@ if show_plots: plt.show()
 hydrogen_effluent = custom_property_history["cathode_effluent"]
 hydrogen_effluent_sum = np.zeros(len(hydrogen_effluent))
 # Numerically integrate values 
-for i in range(len(hydrogen_effluent_sum)):
-    for j in range(i):
-        hydrogen_effluent_sum[i] +=hydrogen_effluent[j]
+for i in range(1,len(hydrogen_effluent_sum)):
+    hydrogen_effluent_sum[i] = hydrogen_effluent_sum[i-1] + hydrogen_effluent[i]
 
 fig, (ax1, ax2) = plt.subplots(1,2, figsize=(8,4))
 # nd -- Hydrogen flow
